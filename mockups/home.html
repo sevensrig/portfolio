@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en" data-theme="creme">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sriganesh Srinivasan</title>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<style>
+  [data-theme="creme"] {
+    color-scheme: light;
+    --color-base-100: #FAF7EE;
+    --color-base-200: #F1ECDD;
+    --color-base-300: #E4DCC6;
+    --color-base-content: #141414;
+    --color-primary: #FF5A1F;
+    --color-primary-content: #141414;
+    --color-neutral: #141414;
+    --color-neutral-content: #FAF7EE;
+    --radius-selector: .5rem;
+    --radius-field: .5rem;
+    --radius-box: .5rem;
+    --border: 2px;
+    --depth: 0;
+    --noise: 0;
+  }
+  ::selection { background: #FF5A1F; color: #141414; }
+  .footage { background: linear-gradient(160deg, #e2ddcf, #cbc5b4); }
+  .brutal { box-shadow: 4px 4px 0 #141414; transition: transform .15s, box-shadow .15s; }
+  .brutal:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 #141414; }
+  .brutal:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 #141414; }
+  .media { transition: transform .15s, box-shadow .15s; }
+  a:hover > .media { transform: translate(-3px,-3px); box-shadow: 6px 6px 0 #141414; }
+</style>
+<style type="text/tailwindcss">
+  @theme {
+    --font-display: "Work Sans", ui-sans-serif, system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+</style>
+</head>
+<body class="bg-base-100 text-base-content font-display antialiased">
+
+<header class="px-4 md:px-12 py-6 flex items-center justify-between">
+  <a href="#" class="flex items-center gap-2.5 font-semibold tracking-tight">
+    <svg viewBox="0 0 24 24" class="size-6" fill="none" stroke="#FF5A1F" stroke-width="2.8" stroke-linecap="round"><path d="M12 3v8"/><path d="M6.3 6.8a8 8 0 1 0 11.4 0"/></svg>
+    Sriganesh Srinivasan
+  </a>
+  <nav class="flex items-center gap-6 text-sm font-medium">
+    <a href="#work" class="hidden sm:inline hover:text-primary">Work</a>
+    <a href="#experience" class="hidden sm:inline hover:text-primary">Experience</a>
+    <a href="#resume" class="btn btn-neutral btn-sm brutal font-semibold">Résumé</a>
+  </nav>
+</header>
+
+<main class="px-4 md:px-12 max-w-6xl mx-auto">
+
+<section class="pt-24 pb-32 md:pt-36 md:pb-44">
+  <h1 class="font-semibold leading-[0.98] tracking-[-0.04em] text-[clamp(2.8rem,8vw,7.5rem)]">
+    Software engineer<br>who ships the<br>whole stack<span class="text-primary">.</span>
+  </h1>
+  <p class="mt-10 max-w-xl text-lg md:text-xl leading-relaxed text-base-content/70">
+    CS at Northeastern, graduating May 2027. Previously at SimpliSafe, Fenwick &amp; West, and Northeastern ITS.
+  </p>
+  <div class="mt-10 flex items-center gap-6 font-medium">
+    <a href="#work" class="btn btn-primary brutal border-2 border-base-content font-semibold">See the work</a>
+    <a href="#" class="hover:text-primary">GitHub ↗</a>
+    <a href="#" class="hover:text-primary">LinkedIn ↗</a>
+  </div>
+</section>
+
+<section id="work" class="pb-32">
+  <h2 class="font-mono text-xs uppercase tracking-widest text-base-content/50 mb-10">Selected work</h2>
+
+  <a href="#" class="group block mb-24">
+    <div class="media footage aspect-[16/9] rounded-box border-2 border-base-content"></div>
+    <div class="mt-8 grid md:grid-cols-2 gap-6 md:gap-12">
+      <div>
+        <h3 class="text-3xl md:text-4xl font-extrabold tracking-[-0.035em]">$20 Blind Draft</h3>
+        <p class="mt-2 font-mono text-xs text-base-content/50">2026 · Supabase · Deno · Postgres</p>
+      </div>
+      <p class="text-lg leading-relaxed text-base-content/75">A real-time draft game that you can play remotely. The server is in charge of all game state, so the shuffled deck never reaches a player's browser. <span class="text-base-content font-medium underline decoration-primary decoration-2 underline-offset-4">Read the story →</span></p>
+    </div>
+  </a>
+
+  <div class="grid md:grid-cols-2 gap-x-10 gap-y-20">
+    <a href="#" class="group block">
+      <div class="media footage aspect-[4/3] rounded-box border-2 border-base-content"></div>
+      <h3 class="mt-6 text-2xl font-extrabold tracking-[-0.03em]">SmartRoomThing</h3>
+      <p class="mt-2 text-base-content/70">A modded Spotify Car Thing that controls the volume of three Google Cast speakers, through a Flask server on a Raspberry Pi.</p>
+      <p class="mt-3 font-mono text-xs text-base-content/50">2025 · Python · Flask · Raspberry Pi</p>
+    </a>
+    <a href="#" class="group block">
+      <div class="media footage aspect-[4/3] rounded-box border-2 border-base-content"></div>
+      <h3 class="mt-6 text-2xl font-extrabold tracking-[-0.03em]">Zoom → Jira Agent</h3>
+      <p class="mt-2 text-base-content/70">Won SimpliSafe's company-wide AI hackathon. An agent pipeline turns meeting transcripts into Jira ticket updates.</p>
+      <p class="mt-3 font-mono text-xs text-base-content/50">2026 · Ollama · Jira Cloud API</p>
+    </a>
+  </div>
+</section>
+
+<section id="experience" class="pb-32">
+  <h2 class="font-mono text-xs uppercase tracking-widest text-base-content/50 mb-6">Experience</h2>
+  <ol class="border-t-2 border-base-content">
+    <li class="grid md:grid-cols-[1fr_2fr_auto] gap-1 md:gap-8 py-6 border-b border-base-content/15">
+      <span class="font-semibold">Fenwick &amp; West</span>
+      <span class="text-base-content/70">Business Innovation Intern</span>
+      <span class="font-mono text-xs text-base-content/50 md:pt-1">2026</span>
+    </li>
+    <li class="grid md:grid-cols-[1fr_2fr_auto] gap-1 md:gap-8 py-6 border-b border-base-content/15">
+      <span class="font-semibold">SimpliSafe</span>
+      <span class="text-base-content/70">Software Engineer Co-op</span>
+      <span class="font-mono text-xs text-base-content/50 md:pt-1">2026</span>
+    </li>
+    <li class="grid md:grid-cols-[1fr_2fr_auto] gap-1 md:gap-8 py-6 border-b border-base-content/15">
+      <span class="font-semibold">Northeastern ITS</span>
+      <span class="text-base-content/70">Salesforce Developer Co-op</span>
+      <span class="font-mono text-xs text-base-content/50 md:pt-1">2025</span>
+    </li>
+  </ol>
+  <a id="resume" href="#" class="mt-8 inline-block font-medium underline decoration-primary decoration-2 underline-offset-4">Full résumé (PDF) ↓</a>
+</section>
+
+<section id="contact" class="pb-28">
+  <h2 class="font-semibold tracking-[-0.04em] leading-[0.95] text-[clamp(2.4rem,6vw,5rem)]">Let's talk<span class="text-primary">.</span></h2>
+  <a href="mailto:ganeshvasan14@gmail.com" class="mt-6 inline-block text-xl md:text-2xl font-medium underline decoration-primary decoration-2 underline-offset-[6px] hover:text-primary">ganeshvasan14@gmail.com</a>
+</section>
+</main>
+
+<footer class="px-4 md:px-12 py-8 flex justify-between font-mono text-xs text-base-content/50">
+  <span>© 2026 Sriganesh Srinivasan</span>
+  <span>Boston, MA</span>
+</footer>
+
+</body>
+</html>
