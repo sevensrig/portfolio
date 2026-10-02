@@ -148,7 +148,7 @@ media:
 - `site` in `astro.config.mjs` once the domain exists.
 
 ## Open questions
-- Should the GitHub repo be called `portfolio`? Public or private? (No remote yet; it's local git only.)
+- GitHub repo: **public** (decided 2026-10-02). Name not final; `portfolio` is the working choice. No remote yet.
 - Which 4–5 projects are final, and in what order?
 - Final headline wording. The current one is a placeholder.
 - Is there footage for every project, or do some need recording or a polished fallback?
