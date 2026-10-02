@@ -1,0 +1,22 @@
+---
+import { yearRange } from "../lib/format"
+
+interface Props {
+  experience: { company: string; role: string; start: Date; end: Date | null }[]
+}
+const { experience } = Astro.props
+---
+
+<section id="experience" class="pb-32">
+  <h2 class="font-mono text-xs uppercase tracking-widest text-base-content/50 mb-6">Experience</h2>
+  <ol class="border-t border-base-content">
+    {experience.map((job) => (
+      <li class="grid md:grid-cols-[1fr_2fr_auto] gap-1 md:gap-8 py-6 border-b border-base-content/15">
+        <span class="font-semibold">{job.company}</span>
+        <span class="text-base-content/70">{job.role}</span>
+        <span class="font-mono text-xs text-base-content/50 md:pt-1">{yearRange(job.start, job.end)}</span>
+      </li>
+    ))}
+  </ol>
+  <a id="resume" href="/resume.pdf" class="mt-8 inline-block font-medium underline decoration-primary decoration-2 underline-offset-4">Full résumé (PDF) ↓</a>
+</section>

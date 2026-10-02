@@ -1,0 +1,71 @@
+# The single source for résumé facts. The home page, the /resume page (Phase 4)
+# and the print PDF all read from here. Projects are referenced by slug and
+# described in their own folders under src/content/projects/.
+# Phone number left out on purpose.
+
+contact:
+  name: Sriganesh Srinivasan
+  location: Boston, MA
+  email: ganeshvasan14@gmail.com
+  github: https://github.com/TODO        # TODO: real GitHub profile URL
+  linkedin: https://www.linkedin.com/in/TODO   # TODO: real LinkedIn profile URL
+  availability: Available to start May 2027
+
+education:
+  - school: Northeastern University
+    degree: BS in Computer Science
+    detail: Concentration in AI
+    graduation: May 2027
+    gpa: "3.67"
+
+# Newest first; the site keeps this order.
+experience:
+  - company: Fenwick & West
+    role: Business Innovation Intern
+    start: 2026-06
+    end: 2026-08
+    bullets:
+      - Built 9 AI automations by connecting 5 service APIs through LLM-driven orchestration.
+      - Cut the expense-reporting automation's run time by 50% (API parallelization, reusable schema references).
+      - Created test seeds and views across 10+ Databricks tables (20k+ rows each) for integration testing.
+      - Built a Python ETL pipeline over 3 data sources with custom scoring signals, surfacing $5M+ in cross-sell opportunities.
+      - Built an LLM email agent using multi-source RAG to write client-specific legal case summaries, with 2-minute response times.
+
+  - company: SimpliSafe
+    role: Software Engineer Co-op
+    start: 2026-01
+    end: 2026-06
+    bullets:
+      - "Front-end platform team for the e-commerce site (52k visits a day). Stack: React, TypeScript, Vite, i18n, Chromatic, Tailwind, TanStack, AWS."
+      - "Completed the migration from Gatsby to React Router: CI/CD build times down 30%, 17,000+ lines of code removed."
+      - "Led the design-system work: 3 components and 100+ icons, built with designers."
+      - Maintained GitHub Actions CI/CD, build tooling, unit and E2E tests, and AWS infrastructure via Terraform across 4 repos.
+      - Won the company-wide AI hackathon (the Zoom → Jira agent).
+
+  - company: Scalable Design Participation Lab
+    role: Research Assistant
+    start: 2025-02
+    end: null
+    bullets:
+      - Designing and building full-stack user management and auth with Firebase Identity and Access Management.
+      - 15+ reusable Vue/TypeScript components and composables in Nuxt.
+
+  - company: Northeastern ITS
+    role: Salesforce Developer Co-op
+    start: 2025-01
+    end: 2025-06
+    bullets:
+      - Owned full-stack Lightning Web Component features for faculty appointment and student-request apps serving 47,000+ students.
+      - Cleared 300+ items of database debt, including fields referenced by over 1M records.
+      - Migrated 20+ legacy Salesforce Classic customizations to Lightning flows and components.
+
+projects:
+  - blind-draft
+  - smartroomthing
+  - zoom-jira-agent
+
+skills:
+  Languages: [Java, Python, TypeScript, JavaScript, CSS, HTML, SQL, Apex, SOQL]
+  DevOps and cloud: [Google Cloud, AWS, Firebase, GitHub Actions, Terraform, Grafana, Vitest, Playwright, Docker, Supabase]
+  Frameworks and tools: [React, Nuxt, Vue, MySQL, REST, Flask, WordPress, Netlify, Jira, Salesforce, Scrum, Vite]
+  AI/ML: [Ollama, Roboflow, RAG, Claude Code, Cursor, Weights & Biases, prompt engineering]

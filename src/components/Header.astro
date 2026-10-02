@@ -1,0 +1,15 @@
+---
+interface Props {
+  name: string
+}
+const { name } = Astro.props
+---
+
+<header class="px-4 md:px-12 py-6 flex items-center justify-between">
+  <a href="/" class="font-semibold tracking-tight">{name}</a>
+  <nav class="flex items-center gap-6 text-sm font-medium">
+    <a href="/#work" class="hidden sm:inline hover:text-primary">Work</a>
+    <a href="/#experience" class="hidden sm:inline hover:text-primary">Experience</a>
+    <a href="/resume.pdf" class="btn btn-neutral btn-sm font-semibold">Résumé</a>
+  </nav>
+</header>

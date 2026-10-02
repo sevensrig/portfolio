@@ -1,0 +1,72 @@
+---
+// One page per project, like generateStaticParams + a dynamic route in Next.js.
+// A basic version for now; Phase 2 adds the gallery, video and story components.
+import { getCollection, render, type CollectionEntry } from "astro:content"
+import Base from "../../layouts/Base.astro"
+import ProjectMedia from "../../components/ProjectMedia.astro"
+import { yearRange } from "../../lib/format"
+
+export async function getStaticPaths() {
+  const projects = await getCollection("projects")
+  return projects.map((project) => ({ params: { slug: project.id }, props: { project } }))
+}
+
+interface Props {
+  project: CollectionEntry<"projects">
+}
+const { project } = Astro.props
+const { title, tagline, period, role, stack, tldr, links, media } = project.data
+const { Content } = await render(project)
+
+const facts = [
+  ["Problem", tldr.problem],
+  ["Built", tldr.built],
+  ["Stack", stack.join(", ")],
+  ["Outcome", tldr.outcome],
+]
+---
+
+<Base title={title} description={tagline}>
+  <main class="px-4 md:px-12 max-w-6xl mx-auto pt-16 pb-32">
+    <a href="/#work" class="font-mono text-xs text-base-content/50 hover:text-base-content">← All work</a>
+
+    <h1 class="mt-10 font-semibold leading-[0.98] tracking-[-0.04em] text-[clamp(2.4rem,6vw,5.5rem)]">
+      {title}<span class="text-primary">.</span>
+    </h1>
+    <p class="mt-6 max-w-2xl text-lg md:text-xl text-base-content/70">{tagline}</p>
+    <p class="mt-4 font-mono text-xs text-base-content/50">{yearRange(period.start, period.end)} · {role}</p>
+
+    <ProjectMedia src={media.hero} alt={title} aspect="wide" class="mt-12" />
+
+    <dl class="mt-12 grid md:grid-cols-2 border-t border-base-content">
+      {facts.map(([label, text]) => (
+        <div class="py-6 md:pr-12 border-b border-base-content/15">
+          <dt class="font-mono text-xs uppercase tracking-widest text-base-content/50">{label}</dt>
+          <dd class="mt-2 leading-relaxed">{text}</dd>
+        </div>
+      ))}
+    </dl>
+
+    {(links.github || links.demo) && (
+      <div class="mt-8 flex gap-6 font-medium">
+        {links.demo && <a href={links.demo} class="underline decoration-primary decoration-2 underline-offset-4">Live demo ↗</a>}
+        {links.github && <a href={links.github} class="underline decoration-primary decoration-2 underline-offset-4">Code ↗</a>}
+      </div>
+    )}
+
+    <article class="story mt-20 max-w-2xl text-lg leading-relaxed">
+      <Content />
+    </article>
+  </main>
+</Base>
+
+<style>
+  /* Minimal prose styles for the MDX story. */
+  .story :global(> * + *) { margin-top: 1.25em; }
+  .story :global(h2) { margin-top: 2.5em; font-size: 1.75rem; font-weight: 600; letter-spacing: -0.03em; }
+  .story :global(h3) { margin-top: 2em; font-size: 1.25rem; font-weight: 600; }
+  .story :global(a) { text-decoration: underline 2px var(--color-primary); text-underline-offset: 4px; }
+  .story :global(ul) { list-style: disc; padding-left: 1.25em; }
+  .story :global(ol) { list-style: decimal; padding-left: 1.25em; }
+  .story :global(code) { font-family: var(--font-mono); font-size: 0.875em; }
+</style>

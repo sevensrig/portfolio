@@ -1,0 +1,45 @@
+---
+// The page shell, like a root layout in Next.js: <head>, header, footer and
+// Hubert. Pages render inside <slot />, the Astro version of {children}.
+import "../styles/global.css"
+import { getEntry } from "astro:content"
+import Header from "../components/Header.astro"
+import Footer from "../components/Footer.astro"
+import Hubert from "../components/Hubert.astro"
+
+interface Props {
+  title?: string
+  description?: string
+}
+
+const resume = (await getEntry("resume", "resume"))!.data
+const name = resume.contact.name
+const {
+  title,
+  description = `${name} — software engineer graduating May 2027. Projects, experience and résumé.`,
+} = Astro.props
+const fullTitle = title ? `${title} · ${name}` : name
+const canonical = new URL(Astro.url.pathname, Astro.site)
+---
+
+<!doctype html>
+<html lang="en" data-theme="creme">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+  </head>
+  <body class="bg-base-100 text-base-content font-display antialiased">
+    <Header name={name} />
+    <slot />
+    <Footer name={name} location={resume.contact.location} />
+    <Hubert />
+  </body>
+</html>

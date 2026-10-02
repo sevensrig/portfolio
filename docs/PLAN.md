@@ -1,6 +1,6 @@
 # Portfolio — plan & decisions
 
-These are the decisions from the first planning session (2026-10-01), which ran in the SmartRoomThing repo by mistake. Everything decided so far is recorded here. **Nothing is built yet**; the only artifact is the static mockup at `mockups/home.html`.
+These are the decisions from the first planning session (2026-10-01), which ran in the SmartRoomThing repo by mistake. Everything decided so far is recorded here. The real Astro site now exists (2026-10-02): Phase 1 is done and the home page is built (most of Phase 3). `mockups/` is kept only as the design reference.
 
 ## Goal and audience
 - A personal portfolio for **full-time recruiters**. The owner is looking for **entry-level SWE roles** and graduates in May 2027.
@@ -22,12 +22,12 @@ These are the decisions from the first planning session (2026-10-01), which ran 
 | MongoDB and analytics | Later extras, and **never for storing content**. Ideas: per-project view counts, a public /stats page, Plausible or Umami. |
 
 ## Visual direction
-- **Minimalist** first, with a *little* neo-brutalism. The first mockup was too busy, and the owner asked for it simpler.
+- **Minimalist, boxy and sharp.** Square corners everywhere, thin 1px hairline borders, flat surfaces. The first mockup was too busy, and the owner asked for it simpler. Neo-brutalism was tried and then dropped (2026-10-01).
 - **Colours:** creme, white and black, with orange accents.
 - **Font:** **Work Sans**. Headlines use **SemiBold (600)** with tight letter-spacing (about −0.04em). JetBrains Mono for small metadata like dates and stack. Satoshi was rejected.
-- **Neo-brutalism is limited to:** 2px black borders on media, a hard 4px offset shadow on buttons, and project media lifting with a shadow on hover. No soft shadows, gradients or glass effects.
-- **Orange is used only for:** the full stops ending headlines ("Let's talk."), link underlines, the primary button, and the small power-icon logo.
-- **Rejected or removed after feedback:** the pulsing "open to work" badge, the vertical icon menu, the scroll-progress line, the scrolling thumbnail strip, the stats box, the status and tag badges, the outlined number callouts, the live clock, and the big orange-ringed logo.
+- **No shadows at all** (neither hard nor soft), and no gradients, glass effects or rounded corners. Media has a faint 1px border; on hover it dims slightly. Buttons are flat rectangles.
+- **Orange is used only for:** the full stops ending headlines ("Let's talk."), link underlines, the primary button, the active work filter, and and Hubert's beak, feather and legs.
+- **Rejected or removed after feedback:** the pulsing "open to work" badge, the vertical icon menu, the scroll-progress line, the scrolling thumbnail strip, the stats box, the status and tag badges, the outlined number callouts, the live clock, the big orange-ringed logo, the small power-icon logo, and the neo-brutalist offset shadows and thick borders.
 - **References the owner likes:**
   - The Brand Appart agency site: huge tightly spaced headline, creme background, a single orange mark.
   - The Next.js blog-starter example: big title, large hero image, two-column title/meta and summary below it.
@@ -39,8 +39,8 @@ These are the decisions from the first planning session (2026-10-01), which ran 
   --color-base-content: #141414;
   --color-primary: #FF5A1F;   --color-primary-content: #141414;
   --color-neutral: #141414;   --color-neutral-content: #FAF7EE;
-  --radius-selector: .5rem; --radius-field: .5rem; --radius-box: .5rem;
-  --border: 2px; --depth: 0; --noise: 0;
+  --radius-selector: 0; --radius-field: 0; --radius-box: 0;
+  --border: 1px; --depth: 0; --noise: 0;
 }
 ```
 
@@ -79,12 +79,13 @@ media:
 - **`resume.yaml`:** experience, education and skills. Its projects section references project slugs, so a project is described in one place only.
 
 ## Home page (as in the mockup)
-1. **Header:** power icon and name on the left; Work, Experience and the Résumé button on the right.
-2. **Hero:** a SemiBold headline ("Software engineer who ships the whole stack." is a placeholder line), one line of context, a "See the work" button, and GitHub and LinkedIn links.
-3. **Selected work:** one large featured project (a 16:9 media block, then two columns: title and meta on the left, summary and "Read the story →" on the right), followed by a two-up grid.
+1. **Header:** name (text only, no logo) on the left; Work, Experience and the Résumé button on the right.
+2. **Hero (centred, full width, about one screen tall):** an animated WebGL background sits behind it: the creme base with a faint orange glow (three soft blobs drifting slowly on looping paths) and a film-grain overlay. It replaced a 21st.dev dithering shader. Settings are at the top of `mockups/shader-background.js`. It draws a still frame under `prefers-reduced-motion`. In Astro this is a plain `<script>` in a component, not a React island. Then a SemiBold headline ("Software engineer who ships the whole stack." is a placeholder line), one line of context, a "See the work" button, and GitHub and LinkedIn links.
+3. **Selected work:** filter buttons sit to the right of the heading (All, Full-stack, Backend, AI, Hardware), as plain text with an orange underline on the active one. Each project has `data-tags`; in the real build these come from a `categories` field in the project frontmatter. Below that: one large featured project (a 16:9 media block, then two columns: title and meta on the left, summary and "Read the story →" on the right), followed by a two-up grid.
 4. **Experience:** a plain table of company, role and year, plus a résumé PDF link.
 5. **Contact:** "Let's talk." and the email address.
 6. **Footer:** © and "Boston, MA".
+7. **Guide character, Hubert:** a tiny minimal square bird fixed to the bottom-right corner, drawn in the same style as the earlier robot: a black square body, two small creme rectangle eyes that follow the cursor and blink, a small orange triangle beak, a single slanted orange feather on top, small black triangle wings, and orange stick legs, with a gentle idle bob. On hover his feather wiggles and his wings flap. Clicking him opens a menu of shortcuts (All projects, AI work, Full-stack work, Experience, Résumé, Get in touch) that scroll to the section and set the work filter; then he hops, flaps and replies in a speech bubble. He talks in a speech bubble above his head (sharp corners, 1px border, a small tail pointing down at him, a quick pop-in). It says "Need a hand finding something?" every time the page opens and stays until clicked; his replies after a shortcut fade after a few seconds or on click. Motion is disabled under reduced motion, and Esc or clicking outside closes the menu. A more detailed bird (big eyes, wings, belly) was tried and dropped as too detailed. Mockup code is in `mockups/guide.js`; in Astro it becomes a component with a plain `<script>`.
 
 ## Projects (candidates; final list still to be chosen)
 - **$20 Blind Draft:** a full-stack web game, Aug 2026–present. Server-authoritative remote play on Supabase (4 Deno Edge Functions, 6 Postgres migrations, row-level security so the shuffled deck stays on the server, conflict handling for simultaneous moves). 190+ tests across Vitest, real-Chromium component tests and Playwright E2E. A randomized simulation plays 840 full drafts per run, with 100% line coverage on the game engine. CI runs 4 parallel GitHub Actions jobs against a live Supabase stack, plus axe-core accessibility checks.
@@ -121,12 +122,30 @@ media:
   - AI/ML: Ollama, Roboflow, RAG, Claude Code, Cursor, Weights & Biases, prompt engineering
 
 ## Phases
-1. Scaffold Astro, Tailwind and daisyUI. Add the creme theme and Work Sans. Define the project and résumé schemas.
-2. Build the project page with SmartRoomThing as the pilot (TL;DR card, MDX story, gallery, video). Write the R2 media script.
-3. Build the home page from the mockup. Deploy to Vercel.
+1. ✅ Scaffold Astro, Tailwind and daisyUI. Add the creme theme and Work Sans. Define the project and résumé schemas.
+2. Build the project page with SmartRoomThing as the pilot (TL;DR card, MDX story, gallery, video). Write the R2 media script. *(A basic project page exists: title, hero, TL;DR grid, MDX body.)*
+3. ✅ Build the home page from the mockup. ⬜ Deploy to Vercel.
 4. Build the résumé page and print PDF.
 5. Migrate the remaining projects.
 6. Later: domain, analytics, MongoDB view counts, OG images, RSS.
+
+## Codebase map (2026-10-02)
+- `src/content.config.ts`: the `projects` and `resume` collections and their Zod schemas. The `CATEGORIES` list here drives the work filters.
+- `src/content/projects/<slug>/index.mdx`: one folder per project. Frontmatter adds `summary` (home page blurb) and `categories` to the draft model above. `media.hero` is optional until photos exist; cards show a grey placeholder without it.
+- `src/data/resume.yaml`: contact, education, experience, project slugs and skills.
+- `src/layouts/Base.astro`: the page shell (head, header, footer, Hubert).
+- `src/components/`: `Hero`, `ShaderBackground`, `WorkSection`, `ProjectCard`, `ProjectMedia`, `ExperienceList`, `Contact`, `Hubert`, `Header`, `Footer`.
+- `src/scripts/`: browser code bundled by Astro (`shader-background.ts`, `work-filters.ts`, `hubert.ts`). There are no React islands; everything is plain `<script>`.
+- `src/pages/index.astro` and `src/pages/projects/[slug].astro`.
+- Fonts are self-hosted through Fontsource (Work Sans Variable, JetBrains Mono 400), not Google Fonts.
+- `/?filter=<category>#work` opens the home page with a filter applied; Hubert uses it from other pages.
+
+## Placeholders to fill in
+- GitHub and LinkedIn URLs in `src/data/resume.yaml` (currently `.../TODO`).
+- `public/resume.pdf` (the Résumé button and "Full résumé" link point to it).
+- SmartRoomThing `tldr.problem` / `tldr.outcome`, and the Zoom → Jira `role`. Check the drafted Blind Draft `tldr.problem` and `role` too.
+- Project cover photos (`media.hero`) and the long-form stories.
+- `site` in `astro.config.mjs` once the domain exists.
 
 ## Open questions
 - Should the GitHub repo be called `portfolio`? Public or private? (No remote yet; it's local git only.)

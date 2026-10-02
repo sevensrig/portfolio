@@ -1,0 +1,57 @@
+@import "tailwindcss";
+@import "@fontsource-variable/work-sans";
+@import "@fontsource/jetbrains-mono/400.css";
+
+@plugin "daisyui" {
+  themes: false;
+}
+
+/* The site's only theme. See docs/PLAN.md → Visual direction. */
+@plugin "daisyui/theme" {
+  name: "creme";
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
+
+  --color-base-100: #FAF7EE;
+  --color-base-200: #F1ECDD;
+  --color-base-300: #E4DCC6;
+  --color-base-content: #141414;
+  --color-primary: #FF5A1F;
+  --color-primary-content: #141414;
+  --color-secondary: #141414;
+  --color-secondary-content: #FAF7EE;
+  --color-accent: #FF5A1F;
+  --color-accent-content: #141414;
+  --color-neutral: #141414;
+  --color-neutral-content: #FAF7EE;
+  --color-info: #3A6EA5;
+  --color-info-content: #FAF7EE;
+  --color-success: #2F7D4F;
+  --color-success-content: #FAF7EE;
+  --color-warning: #E0A100;
+  --color-warning-content: #141414;
+  --color-error: #C8361B;
+  --color-error-content: #FAF7EE;
+
+  --radius-selector: 0;
+  --radius-field: 0;
+  --radius-box: 0;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+@theme {
+  --font-display: "Work Sans Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  [id] { scroll-margin-top: 2.5rem; }
+  ::selection { background: var(--color-primary); color: var(--color-primary-content); }
+}

@@ -18,20 +18,23 @@
     --color-primary-content: #141414;
     --color-neutral: #141414;
     --color-neutral-content: #FAF7EE;
-    --radius-selector: .5rem;
-    --radius-field: .5rem;
-    --radius-box: .5rem;
-    --border: 2px;
+    --radius-selector: 0;
+    --radius-field: 0;
+    --radius-box: 0;
+    --border: 1px;
     --depth: 0;
     --noise: 0;
   }
   ::selection { background: #FF5A1F; color: #141414; }
   .footage { background: linear-gradient(160deg, #e2ddcf, #cbc5b4); }
-  .brutal { box-shadow: 4px 4px 0 #141414; transition: transform .15s, box-shadow .15s; }
-  .brutal:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 #141414; }
-  .brutal:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 #141414; }
-  .media { transition: transform .15s, box-shadow .15s; }
-  a:hover > .media { transform: translate(-3px,-3px); box-shadow: 6px 6px 0 #141414; }
+  [id] { scroll-margin-top: 2.5rem; }
+  [data-filter] { color: color-mix(in oklab, #141414 50%, transparent); text-decoration: underline 2px transparent; text-underline-offset: 6px; transition: color .15s, text-decoration-color .15s; cursor: pointer; }
+  [data-filter]:hover { color: #141414; }
+  [data-filter][aria-pressed="true"] { color: #141414; text-decoration-color: #FF5A1F; }
+  [data-tags][hidden] { display: none; }
+  [data-shader-background] { display: block; width: 100%; height: 100%; }
+  .media { transition: opacity .2s; }
+  a:hover > .media { opacity: .85; }
 </style>
 <style type="text/tailwindcss">
   @theme {
@@ -43,41 +46,53 @@
 <body class="bg-base-100 text-base-content font-display antialiased">
 
 <header class="px-4 md:px-12 py-6 flex items-center justify-between">
-  <a href="#" class="flex items-center gap-2.5 font-semibold tracking-tight">
-    <svg viewBox="0 0 24 24" class="size-6" fill="none" stroke="#FF5A1F" stroke-width="2.8" stroke-linecap="round"><path d="M12 3v8"/><path d="M6.3 6.8a8 8 0 1 0 11.4 0"/></svg>
+  <a href="#" class="font-semibold tracking-tight">
     Sriganesh Srinivasan
   </a>
   <nav class="flex items-center gap-6 text-sm font-medium">
     <a href="#work" class="hidden sm:inline hover:text-primary">Work</a>
     <a href="#experience" class="hidden sm:inline hover:text-primary">Experience</a>
-    <a href="#resume" class="btn btn-neutral btn-sm brutal font-semibold">Résumé</a>
+    <a href="#resume" class="btn btn-neutral btn-sm font-semibold">Résumé</a>
   </nav>
 </header>
 
-<main class="px-4 md:px-12 max-w-6xl mx-auto">
-
-<section class="pt-24 pb-32 md:pt-36 md:pb-44">
-  <h1 class="font-semibold leading-[0.98] tracking-[-0.04em] text-[clamp(2.8rem,8vw,7.5rem)]">
-    Software engineer<br>who ships the<br>whole stack<span class="text-primary">.</span>
-  </h1>
-  <p class="mt-10 max-w-xl text-lg md:text-xl leading-relaxed text-base-content/70">
-    CS at Northeastern, graduating May 2027. Previously at SimpliSafe, Fenwick &amp; West, and Northeastern ITS.
-  </p>
-  <div class="mt-10 flex items-center gap-6 font-medium">
-    <a href="#work" class="btn btn-primary brutal border-2 border-base-content font-semibold">See the work</a>
-    <a href="#" class="hover:text-primary">GitHub ↗</a>
-    <a href="#" class="hover:text-primary">LinkedIn ↗</a>
+<section class="relative overflow-hidden border-y border-base-content/10">
+  <canvas data-shader-background class="absolute inset-0" aria-hidden="true"></canvas>
+  <div class="relative px-4 md:px-12 max-w-6xl mx-auto min-h-[calc(100svh-5rem)] py-24 flex flex-col items-center justify-center text-center">
+    <h1 class="font-semibold leading-[0.98] tracking-[-0.04em] text-[clamp(2.8rem,8vw,7.5rem)]">
+      Software engineer<br>who ships the<br>whole stack<span class="text-primary">.</span>
+    </h1>
+    <p class="mt-10 mx-auto max-w-xl text-lg md:text-xl leading-relaxed text-base-content/70">
+      CS at Northeastern, graduating May 2027. Previously at SimpliSafe, Fenwick &amp; West, and Northeastern ITS.
+    </p>
+    <div class="mt-10 flex items-center justify-center gap-6 font-medium">
+      <a href="#work" class="btn btn-primary font-semibold">See the work</a>
+      <a href="#" class="hover:text-primary">GitHub ↗</a>
+      <a href="#" class="hover:text-primary">LinkedIn ↗</a>
+    </div>
   </div>
 </section>
 
-<section id="work" class="pb-32">
-  <h2 class="font-mono text-xs uppercase tracking-widest text-base-content/50 mb-10">Selected work</h2>
+<main class="px-4 md:px-12 max-w-6xl mx-auto pt-32">
 
-  <a href="#" class="group block mb-24">
-    <div class="media footage aspect-[16/9] rounded-box border-2 border-base-content"></div>
+<section id="work" class="pb-32">
+  <div class="mb-10 flex flex-wrap items-baseline justify-between gap-4">
+    <h2 class="font-mono text-xs uppercase tracking-widest text-base-content/50">Selected work</h2>
+    <div class="flex flex-wrap gap-5 text-sm font-medium" role="group" aria-label="Filter projects">
+      <button type="button" data-filter="all" aria-pressed="true">All</button>
+      <button type="button" data-filter="fullstack" aria-pressed="false">Full-stack</button>
+      <button type="button" data-filter="backend" aria-pressed="false">Backend</button>
+      <button type="button" data-filter="ai" aria-pressed="false">AI</button>
+      <button type="button" data-filter="hardware" aria-pressed="false">Hardware</button>
+    </div>
+  </div>
+  <p data-filter-empty hidden class="py-16 text-base-content/60">Nothing here yet.</p>
+
+  <a href="#" class="group block mb-24" data-tags="fullstack">
+    <div class="media footage aspect-[16/9] border border-base-content/20"></div>
     <div class="mt-8 grid md:grid-cols-2 gap-6 md:gap-12">
       <div>
-        <h3 class="text-3xl md:text-4xl font-extrabold tracking-[-0.035em]">$20 Blind Draft</h3>
+        <h3 class="text-3xl md:text-4xl font-semibold tracking-[-0.035em]">$20 Blind Draft</h3>
         <p class="mt-2 font-mono text-xs text-base-content/50">2026 · Supabase · Deno · Postgres</p>
       </div>
       <p class="text-lg leading-relaxed text-base-content/75">A real-time draft game that you can play remotely. The server is in charge of all game state, so the shuffled deck never reaches a player's browser. <span class="text-base-content font-medium underline decoration-primary decoration-2 underline-offset-4">Read the story →</span></p>
@@ -85,15 +100,15 @@
   </a>
 
   <div class="grid md:grid-cols-2 gap-x-10 gap-y-20">
-    <a href="#" class="group block">
-      <div class="media footage aspect-[4/3] rounded-box border-2 border-base-content"></div>
-      <h3 class="mt-6 text-2xl font-extrabold tracking-[-0.03em]">SmartRoomThing</h3>
+    <a href="#" class="group block" data-tags="hardware backend">
+      <div class="media footage aspect-[4/3] border border-base-content/20"></div>
+      <h3 class="mt-6 text-2xl font-semibold tracking-[-0.03em]">SmartRoomThing</h3>
       <p class="mt-2 text-base-content/70">A modded Spotify Car Thing that controls the volume of three Google Cast speakers, through a Flask server on a Raspberry Pi.</p>
       <p class="mt-3 font-mono text-xs text-base-content/50">2025 · Python · Flask · Raspberry Pi</p>
     </a>
-    <a href="#" class="group block">
-      <div class="media footage aspect-[4/3] rounded-box border-2 border-base-content"></div>
-      <h3 class="mt-6 text-2xl font-extrabold tracking-[-0.03em]">Zoom → Jira Agent</h3>
+    <a href="#" class="group block" data-tags="ai backend">
+      <div class="media footage aspect-[4/3] border border-base-content/20"></div>
+      <h3 class="mt-6 text-2xl font-semibold tracking-[-0.03em]">Zoom → Jira Agent</h3>
       <p class="mt-2 text-base-content/70">Won SimpliSafe's company-wide AI hackathon. An agent pipeline turns meeting transcripts into Jira ticket updates.</p>
       <p class="mt-3 font-mono text-xs text-base-content/50">2026 · Ollama · Jira Cloud API</p>
     </a>
@@ -102,7 +117,7 @@
 
 <section id="experience" class="pb-32">
   <h2 class="font-mono text-xs uppercase tracking-widest text-base-content/50 mb-6">Experience</h2>
-  <ol class="border-t-2 border-base-content">
+  <ol class="border-t border-base-content">
     <li class="grid md:grid-cols-[1fr_2fr_auto] gap-1 md:gap-8 py-6 border-b border-base-content/15">
       <span class="font-semibold">Fenwick &amp; West</span>
       <span class="text-base-content/70">Business Innovation Intern</span>
@@ -132,6 +147,10 @@
   <span>© 2026 Sriganesh Srinivasan</span>
   <span>Boston, MA</span>
 </footer>
+
+<script type="module" src="shader-background.js"></script>
+<script type="module" src="filters.js"></script>
+<script type="module" src="guide.js"></script>
 
 </body>
 </html>

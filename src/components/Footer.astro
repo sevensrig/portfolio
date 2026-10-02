@@ -1,0 +1,12 @@
+---
+interface Props {
+  name: string
+  location: string
+}
+const { name, location } = Astro.props
+---
+
+<footer class="px-4 md:px-12 py-8 flex justify-between font-mono text-xs text-base-content/50">
+  <span>© {new Date().getFullYear()} {name}</span>
+  <span>{location}</span>
+</footer>

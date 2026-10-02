@@ -1,0 +1,20 @@
+---
+title: $20 Blind Draft
+tagline: A real-time draft game you can play remotely
+summary: A real-time draft game that you can play remotely. The server is in charge of all game state, so the shuffled deck never reaches a player's browser.
+status: active
+period: { start: 2026-08, end: null }
+role: Solo — full stack
+stack: [Supabase, Deno, Postgres, TypeScript, Vitest, Playwright]
+categories: [fullstack, backend]
+featured: true
+order: 1
+tldr:
+  problem: Playing a draft game remotely means no player can be trusted to hold the shuffled deck.
+  built: Server-authoritative remote play on Supabase — 4 Deno Edge Functions, 6 Postgres migrations, and row-level security so the deck stays on the server, with conflict handling for simultaneous moves.
+  outcome: 190+ tests across Vitest, real-Chromium component tests and Playwright E2E. A randomized simulation plays 840 full drafts per run with 100% line coverage on the game engine. CI runs 4 parallel jobs against a live Supabase stack, plus axe-core accessibility checks.
+---
+
+{/* TODO: the long-form story. */}
+
+The full write-up is coming soon.

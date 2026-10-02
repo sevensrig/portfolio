@@ -1,0 +1,48 @@
+---
+import { getCollection } from "astro:content"
+import { CATEGORIES } from "../content.config"
+import ProjectCard from "./ProjectCard.astro"
+
+const projects = (await getCollection("projects")).sort((a, b) => a.data.order - b.data.order)
+const featured = projects.find((p) => p.data.featured) ?? projects[0]
+const rest = projects.filter((p) => p !== featured)
+
+// Only offer filters that match at least one project.
+const used = new Set(projects.flatMap((p) => p.data.categories))
+const filters = Object.entries(CATEGORIES).filter(([key]) => used.has(key as keyof typeof CATEGORIES))
+---
+
+<section id="work" class="pb-32">
+  <div class="mb-10 flex flex-wrap items-baseline justify-between gap-4">
+    <h2 class="font-mono text-xs uppercase tracking-widest text-base-content/50">Selected work</h2>
+    <div class="flex flex-wrap gap-5 text-sm font-medium" role="group" aria-label="Filter projects">
+      <button type="button" class="work-filter" data-filter="all" aria-pressed="true">All</button>
+      {filters.map(([key, label]) => (
+        <button type="button" class="work-filter" data-filter={key} aria-pressed="false">{label}</button>
+      ))}
+    </div>
+  </div>
+  <p data-filter-empty hidden class="py-16 text-base-content/60">Nothing here yet.</p>
+
+  {featured && <ProjectCard project={featured} featured class="mb-24" />}
+  <div class="grid md:grid-cols-2 gap-x-10 gap-y-20">
+    {rest.map((project) => <ProjectCard project={project} />)}
+  </div>
+</section>
+
+<script>
+  import { initWorkFilters } from "../scripts/work-filters"
+  initWorkFilters()
+</script>
+
+<style>
+  .work-filter {
+    color: color-mix(in oklab, var(--color-base-content) 50%, transparent);
+    text-decoration: underline 2px transparent;
+    text-underline-offset: 6px;
+    transition: color 0.15s, text-decoration-color 0.15s;
+    cursor: pointer;
+  }
+  .work-filter:hover { color: var(--color-base-content); }
+  .work-filter[aria-pressed="true"] { color: var(--color-base-content); text-decoration-color: var(--color-primary); }
+</style>

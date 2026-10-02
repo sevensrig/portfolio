@@ -1,0 +1,117 @@
+---
+// Hubert: a small square bird fixed to the bottom-right corner. Clicking him
+// opens a menu of shortcuts for recruiters (jump to a home page section, or
+// filter the work). Behaviour lives in src/scripts/hubert.ts.
+//
+// Each option names a home page section, an optional work filter, and what
+// Hubert says once he has taken you there.
+const options = [
+  { label: "All projects", target: "work", filter: "all", reply: "Here's everything." },
+  { label: "AI work", target: "work", filter: "ai", reply: "Here's the AI work." },
+  { label: "Full-stack work", target: "work", filter: "fullstack", reply: "Full-stack, coming up." },
+  { label: "Experience", target: "experience", reply: "Here's where I've worked." },
+  { label: "Résumé (PDF)", target: "resume", reply: "The résumé is right here." },
+  { label: "Get in touch", target: "contact", reply: "Say hi!" },
+]
+---
+
+<div class="hubert" data-hubert>
+  <button type="button" class="hubert-bubble" aria-live="polite" title="Click to dismiss" hidden></button>
+  <div class="hubert-panel" id="hubert-panel" role="dialog" aria-label="Page guide" hidden>
+    <p>Hi, I'm Hubert! What are you looking for?</p>
+    <ul>
+      {options.map((o) => (
+        <li>
+          <button type="button" data-target={o.target} data-filter-to={o.filter} data-reply={o.reply}>
+            {o.label}<span aria-hidden="true">→</span>
+          </button>
+        </li>
+      ))}
+    </ul>
+  </div>
+  <button type="button" class="hubert-button" aria-label="Open page guide" aria-expanded="false" aria-controls="hubert-panel">
+    <svg class="hubert-body" width="48" height="58" viewBox="0 0 48 58" aria-hidden="true">
+      <polygon class="hubert-tuft" points="21,12 25,2 29,4 26,12" fill="var(--color-primary)" />
+      <polygon class="hubert-wing hubert-wing-l" points="5,28 0,37 5,39" fill="var(--color-neutral)" />
+      <polygon class="hubert-wing hubert-wing-r" points="43,28 48,37 43,39" fill="var(--color-neutral)" />
+      <rect x="4" y="12" width="40" height="38" fill="var(--color-neutral)" />
+      <g class="hubert-eyes">
+        <rect class="hubert-eye" x="14" y="24" width="6" height="9" fill="var(--color-base-100)" />
+        <rect class="hubert-eye" x="28" y="24" width="6" height="9" fill="var(--color-base-100)" />
+      </g>
+      <polygon points="20,37 28,37 24,43" fill="var(--color-primary)" />
+      <g fill="var(--color-primary)">
+        <rect x="15" y="50" width="2" height="5" /><rect x="12" y="54" width="8" height="2" />
+        <rect x="31" y="50" width="2" height="5" /><rect x="28" y="54" width="8" height="2" />
+      </g>
+    </svg>
+  </button>
+</div>
+
+<script>
+  import { initHubert } from "../scripts/hubert"
+  const root = document.querySelector<HTMLElement>("[data-hubert]")
+  if (root) initHubert(root)
+</script>
+
+<style>
+  .hubert { position: fixed; right: 16px; bottom: 16px; z-index: 50; }
+  @media (min-width: 768px) { .hubert { right: 32px; bottom: 28px; } }
+  .hubert [hidden] { display: none; }
+
+  .hubert-button { display: block; padding: 4px; cursor: pointer; }
+  .hubert-button:focus-visible, .hubert-bubble:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
+  .hubert-body { display: block; animation: hubert-bob 2.6s ease-in-out infinite; }
+  .hubert-tuft { transform-box: fill-box; transform-origin: bottom center; }
+  .hubert-wing { transform-box: fill-box; }
+  .hubert-wing-l { transform-origin: top right; }
+  .hubert-wing-r { transform-origin: top left; }
+  .hubert-eyes { transition: transform .12s ease-out; }
+  .hubert-eye { transform-box: fill-box; transform-origin: center; transition: transform .08s; }
+
+  .hubert-button:hover .hubert-tuft { animation: hubert-wiggle .5s ease-in-out; }
+  .hubert-button:hover .hubert-wing-l, .hubert.happy .hubert-wing-l { animation: hubert-flap-l .22s ease-in-out 2; }
+  .hubert-button:hover .hubert-wing-r, .hubert.happy .hubert-wing-r { animation: hubert-flap-r .22s ease-in-out 2; }
+  .hubert.happy .hubert-body { animation: hubert-hop .5s ease-out; }
+  .hubert.blink .hubert-eye { transform: scaleY(.1); }
+
+  .hubert-bubble, .hubert-panel {
+    position: absolute; right: 0; bottom: calc(100% + 10px);
+    background: var(--color-base-100); border: 1px solid var(--color-base-content); color: var(--color-base-content);
+  }
+  .hubert-bubble {
+    bottom: calc(100% + 14px); width: max-content; max-width: 220px; padding: 8px 12px;
+    font-size: 14px; font-weight: 500; text-align: left; cursor: pointer;
+    transform-origin: calc(100% - 28px) calc(100% + 8px);
+    animation: hubert-pop .25s cubic-bezier(.3, 1.4, .6, 1);
+  }
+  /* Tail: a rotated square whose two bordered sides form a point at his head. */
+  .hubert-bubble::after {
+    content: ""; position: absolute; right: 23px; bottom: -6px; width: 10px; height: 10px;
+    background: var(--color-base-100);
+    border-right: 1px solid var(--color-base-content); border-bottom: 1px solid var(--color-base-content);
+    transform: rotate(45deg);
+  }
+
+  .hubert-panel { width: 248px; }
+  .hubert-panel p { padding: 14px 16px 10px; font-size: 14px; line-height: 1.4; }
+  .hubert-panel ul { border-top: 1px solid color-mix(in oklab, var(--color-base-content) 15%, transparent); }
+  .hubert-panel li + li { border-top: 1px solid color-mix(in oklab, var(--color-base-content) 10%, transparent); }
+  .hubert-panel li button {
+    display: flex; width: 100%; justify-content: space-between; padding: 10px 16px;
+    font-size: 14px; font-weight: 500; text-align: left; cursor: pointer;
+  }
+  .hubert-panel li button:hover, .hubert-panel li button:focus-visible { background: var(--color-base-200); outline: none; }
+  .hubert-panel li button span { color: color-mix(in oklab, var(--color-base-content) 40%, transparent); }
+
+  @keyframes hubert-bob { 50% { transform: translateY(-3px); } }
+  @keyframes hubert-wiggle { 25% { transform: rotate(-12deg); } 75% { transform: rotate(12deg); } }
+  @keyframes hubert-flap-l { 50% { transform: rotate(30deg); } }
+  @keyframes hubert-flap-r { 50% { transform: rotate(-30deg); } }
+  @keyframes hubert-pop { from { transform: scale(.6); opacity: 0; } }
+  @keyframes hubert-hop { 30% { transform: translateY(-8px); } 60% { transform: translateY(0); } 80% { transform: translateY(-2px); } }
+  @media (prefers-reduced-motion: reduce) {
+    .hubert-body, .hubert-tuft, .hubert-wing, .hubert-bubble { animation: none !important; }
+  }
+</style>

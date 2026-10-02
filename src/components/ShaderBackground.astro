@@ -1,0 +1,15 @@
+---
+// The animated creme-and-orange glow behind the hero. Fills its parent, so
+// the parent needs `position: relative`. Plain <script>, no React needed.
+interface Props {
+  class?: string
+}
+const { class: className } = Astro.props
+---
+
+<canvas data-shader-background class:list={["block size-full", className]} aria-hidden="true"></canvas>
+
+<script>
+  import { mountShaderBackground } from "../scripts/shader-background"
+  document.querySelectorAll<HTMLCanvasElement>("canvas[data-shader-background]").forEach(mountShaderBackground)
+</script>
