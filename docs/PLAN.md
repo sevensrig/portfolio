@@ -16,6 +16,7 @@ These are the decisions from the first planning session (2026-10-01), which ran 
 | Projects | 4–5 projects. **Every project has photos and video.** |
 | Résumé | A dedicated résumé page built from `resume.yaml`, with a print stylesheet for the PDF. |
 | Dark mode | **No.** Creme only. |
+| Repo | Public on GitHub: https://github.com/sevensrig/portfolio (`main`). |
 | Domain | Later. It'll come from the GitHub Student Pack (.me or .tech). Check the renewal price, since the free offer covers only year one. |
 | Hosting | Vercel (recommended; the MongoDB driver works well in Vercel's Node functions). |
 | Video | Not stored in git. Use **Cloudflare R2** (10 GB free, no bandwidth charges). An ffmpeg script compresses clips to MP4 and WebM and grabs poster frames. Images stay in the repo and Astro optimizes them at build time. |
@@ -141,14 +142,14 @@ media:
 - `/?filter=<category>#work` opens the home page with a filter applied; Hubert uses it from other pages.
 
 ## Placeholders to fill in
-- GitHub and LinkedIn URLs in `src/data/resume.yaml` (currently `.../TODO`).
+- LinkedIn URL in `src/data/resume.yaml` (currently `.../TODO`).
 - `public/resume.pdf` (the Résumé button and "Full résumé" link point to it).
 - SmartRoomThing `tldr.problem` / `tldr.outcome`, and the Zoom → Jira `role`. Check the drafted Blind Draft `tldr.problem` and `role` too.
 - Project cover photos (`media.hero`) and the long-form stories.
 - `site` in `astro.config.mjs` once the domain exists.
 
 ## Open questions
-- GitHub repo: **public** (decided 2026-10-02). Name not final; `portfolio` is the working choice. No remote yet.
+- ~~GitHub repo name and visibility~~ Done: public at https://github.com/sevensrig/portfolio (2026-10-02).
 - Which 4–5 projects are final, and in what order?
 - Final headline wording. The current one is a placeholder.
 - Is there footage for every project, or do some need recording or a polished fallback?
