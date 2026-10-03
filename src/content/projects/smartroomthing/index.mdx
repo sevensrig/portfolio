@@ -16,7 +16,6 @@ media:
   hero: ./now-playing.png
 ---
 
-import nowPlaying from "./now-playing.png"
 import mixer from "./mixer.png"
 
 {/* DRAFT written from the repo's code and commit history. Edit freely, especially the "why" and anything in your own voice. */}
@@ -31,14 +30,7 @@ The Car Thing was Spotify's discontinued in-car gadget: a small touchscreen with
 - **Button 4:** flips to a now-playing screen with album art and playback controls.
 - **Back button:** opens a grid of playlist covers.
 
-<Gallery
-  items={[
-    { src: mixer, alt: "Mixer screen: three volume faders labelled NEST, HOME and CAST at 60, 50 and 70, under the DESK preset", caption: "The mixer, with the DESK preset active." },
-    { src: nowPlaying, alt: "Now Playing screen: album art, track title, a progress bar and playback controls", caption: "Now Playing, the home screen." },
-  ]}
-/>
-
-<p class="font-mono text-xs text-base-content/50">Screens rendered from the device's actual web app, with sample data.</p>
+<Figure src={mixer} alt="Mixer screen: three volume faders labelled NEST, HOME and CAST at 60, 50 and 70, under the DESK preset" caption="The mixer, with the DESK preset active. Rendered from the device's actual web app, with sample data." />
 
 ## How it works
 
