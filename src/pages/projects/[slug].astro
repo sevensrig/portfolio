@@ -24,7 +24,7 @@ const { project, next } = Astro.props
 const { title, tagline, period, role, status, stack, tldr, links, media } = project.data
 const { Content } = await render(project)
 
-const statusLabel = { shipped: "Shipped", active: "In use", archived: "Archived", abandoned: "Abandoned" }[status]
+const statusLabel = { shipped: "Shipped", active: "Active", archived: "Archived", abandoned: "Abandoned" }[status]
 const facts = [
   ["Problem", tldr.problem],
   ["Built", tldr.built],

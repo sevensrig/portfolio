@@ -1,20 +1,81 @@
 ---
 title: $20 Blind Draft
-tagline: A real-time draft game you can play remotely
-summary: A real-time draft game that you can play remotely. The server is in charge of all game state, so the shuffled deck never reaches a player's browser.
+tagline: A two-player bidding party game you can play on one phone or two
+summary: A two-player blind-bidding party game. Online play is server-authoritative, so the shuffled deck never reaches a player's browser, and a randomized simulation plays 840 full drafts on every test run.
 status: active
-period: { start: 2026-08, end: null }
-role: Solo — full stack
-stack: [Supabase, Deno, Postgres, TypeScript, Vitest, Playwright]
+period: { start: 2026-07, end: null }
+role: Solo — design, frontend, backend
+stack: [SvelteKit, TypeScript, Supabase, Postgres, Deno, Vitest, Playwright]
 categories: [fullstack, backend]
 featured: true
 order: 1
+links:
+  demo: https://blind-draft.vercel.app
+  github: https://github.com/sevensrig/blind-draft
 tldr:
-  problem: Playing a draft game remotely means no player can be trusted to hold the shuffled deck.
-  built: Server-authoritative remote play on Supabase — 4 Deno Edge Functions, 6 Postgres migrations, and row-level security so the deck stays on the server, with conflict handling for simultaneous moves.
-  outcome: 190+ tests across Vitest, real-Chromium component tests and Playwright E2E. A randomized simulation plays 840 full drafts per run with 100% line coverage on the game engine. CI runs 4 parallel jobs against a live Supabase stack, plus axe-core accessibility checks.
+  problem: The "$20 draft" party game only works if nobody knows what's coming next. Played remotely, whoever holds the shuffled deck could peek at it.
+  built: A SvelteKit game whose rules are one pure reducer. Online play runs that same reducer in Supabase Edge Functions behind row-level security, so clients only ever see a redacted copy of the game, and simultaneous moves are settled with optimistic versioning.
+  outcome: Live, with no accounts needed. 190+ tests across unit, real-browser component and end-to-end suites, including a seeded simulation of 840 full drafts per run. CI runs 4 parallel jobs and gates on axe-core accessibility checks.
+media:
+  hero: ./cover.png
 ---
 
-{/* TODO: the long-form story. */}
+{/* DRAFT written from the repo's code and commit history. Edit freely. */}
 
-The full write-up is coming soon.
+## What it does
+
+Two players each get a fake $20 and a few empty roster slots. Items from a category (NBA players, foods, movies, or a list you type yourself) are revealed one at a time, so nobody knows whether something better is coming. Either player opens the bidding, they raise each other, and when one concedes, the other buys it. Every item ends up on someone's roster.
+
+- **No turn order:** whoever wants the item opens.
+- **Running out of money is the point:** once a player is broke, the other names the price or lets items go free.
+- **No accounts:** play pass-and-play on one phone, or share a room link and play on two.
+- **The results sheet** is built to be screenshotted and argued about. There's no score.
+
+
+## How it works
+
+- **The rules are one pure function.** `applyAction(state, action)` takes the game and a move and returns the next game. It knows nothing about Svelte, the DOM or storage. An illegal move returns the state untouched instead of throwing, so a stray double-tap can't break a game.
+- **Local play** runs that reducer in the browser and saves to localStorage.
+- **Online play** sends the same actions to four Supabase Edge Functions (create, join, act, leave), which run the same reducer on the server. Because the shuffled order is the whole game, it never leaves the server.
+- **Row-level security hides the deck.** Clients can't read the real game tables at all. They read projection tables that hold a redacted copy, with the face-down card sent as `null`. The secret can't leak through a column that doesn't exist.
+- **Simultaneous moves** use a version number. A write only lands if the version still matches. The loser of a race gets the corrected state back, and their screen says "Your opponent got there first."
+- **Identity** is a per-device token instead of an account, so refreshing mid-game puts you back in your seat.
+
+<Timeline
+  items={[
+    { date: "Jul 2026", text: "Pass-and-play on one phone, with the rules engine and the full content pools." },
+    { date: "Aug 2026", text: "Online play: schema, row-level security, Edge Functions and realtime updates. CI added." },
+    { date: "Aug 2026", text: "Fixed quitting, the self-award exploit, and invite links that seated nameless guests." },
+    { date: "Sep 2026", text: "Keepalive fix, then a cleanup that cut 1,383 lines of stale comments and dead code." },
+  ]}
+/>
+
+## What broke
+
+<Callout type="broke" title="Realtime updates, silently denied">
+  Online games stopped updating, with no error. My row-level security policy reads a player token from a request header. The REST API sets that header, but Supabase Realtime doesn't, so every change was checked against the policy, denied, and dropped without telling anyone.
+
+  I could have loosened the policy so anyone with a room ID could read it. Instead, a database trigger now broadcasts just the new version number, and clients re-fetch the game over REST, where the policy works. The first version only re-fetched when the number went up, which left the host stuck in the lobby when a guest joined. Now any nudge means "go check."
+</Callout>
+
+<Callout type="broke" title="Quitting wiped your opponent's game">
+  The Quit button sent a "reset" action. That's a legal move, so the server happily wrote a blank game, and the other player's draft vanished mid-bid. Rooms also never closed, so they stayed listed in the lobby. I added a proper leave function, marked rooms as abandoned, and gave the survivor an honest "your opponent left" screen instead of a results sheet.
+</Callout>
+
+<Callout type="broke" title="A self-serve win button">
+  Whoever held the top bid could press "Sell" on their own bid and award themselves the item before the other player could react. The server had the same hole: its seat check only ran on actions that named a player, so a bare "sold" slipped through. The fix lives in the rules engine, and an end-to-end test now sends that request as a hostile client at every version and expects it to be refused.
+</Callout>
+
+## Testing
+
+I tested at three levels, each for a different reason:
+
+- **Unit tests** cover the rules engine at 100% of lines and functions. A seeded simulation plays 40 full games for each of the 21 content pools, from timid to reckless bidding, and checks that money is conserved and every item is owned exactly once. That's 840 drafts per run, and it's what proves no line of play can strand a player.
+- **Component tests** run in real Chromium, not a simulated DOM, because the accessibility contrast checks need real rendering. axe found two real contrast failures (3.36:1 and 3.94:1), fixed with a dedicated muted-ink color.
+- **End-to-end tests** in Playwright run against the production build, never the dev server. The worst bug this project has had, a crash that left a page rendering perfectly with every button dead, only showed up in built output.
+
+CI runs these as 4 parallel jobs, so a red X says *what* broke. The end-to-end job boots a local Supabase stack and fails, rather than skips, if the online tests can't run.
+
+## What I'd do next
+
+Online play has been tested in separate browser sessions but not yet on two real phones. Next up: no test yet fires two moves at the exact same moment, end-to-end tests only cover Chromium, and a quit could offer a rematch instead of a dead end.

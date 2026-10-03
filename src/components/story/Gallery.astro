@@ -1,18 +1,20 @@
 ---
-// A two-up grid of captioned images, slightly wider than the text column.
+// A grid of captioned images, slightly wider than the text column.
+// Two columns by default; three suits tall phone screenshots.
 import { Image } from "astro:assets"
 import type { ImageMetadata } from "astro"
 
 interface Props {
   items: { src: ImageMetadata; alt: string; caption?: string }[]
+  columns?: 2 | 3
 }
-const { items } = Astro.props
+const { items, columns = 2 } = Astro.props
 ---
 
-<div class="my-12 grid gap-6 sm:grid-cols-2 md:-mx-24 lg:-mx-40">
+<div class:list={["my-12 grid gap-6 md:-mx-24 lg:-mx-40", columns === 3 ? "grid-cols-3" : "sm:grid-cols-2"]}>
   {items.map((item) => (
     <figure>
-      <Image src={item.src} alt={item.alt} class="w-full h-auto border border-base-content/20" widths={[480, 720, 960]} sizes="(min-width: 640px) 50vw, 100vw" />
+      <Image src={item.src} alt={item.alt} class="w-full h-auto border border-base-content/20" widths={[480, 720, 960]} sizes={columns === 3 ? "33vw" : "(min-width: 640px) 50vw, 100vw"} />
       {item.caption && <figcaption class="mt-3 font-mono text-xs text-base-content/50">{item.caption}</figcaption>}
     </figure>
   ))}
