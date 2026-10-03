@@ -9,7 +9,7 @@ stack: [Python, Flask, PyChromecast, Raspberry Pi, JavaScript, ADB, systemd]
 categories: [hardware, backend]
 order: 2
 tldr:
-  problem: Three Google Cast speakers in one room (a Nest Audio, a Google Home and the TV) each had their own volume, and adjusting them meant a phone and a cloud round-trip.
+  problem: Three Google Cast speakers in one room (a Nest Audio, a Google Home and the TV) each had their own volume, and adjusting them meant using a phone and unbalanced speaker volumes.
   built: A Spotify Car Thing with no WiFi, tunnelled over USB to a Flask server on a Raspberry Pi 2. The server drives all three speakers and proxies Spotify. The dial scales the whole mix, buttons recall presets, and there's a now-playing screen and a playlist grid.
   outcome: It runs 24/7 on the Pi. After profiling, dial-to-speaker latency fell from 1,177 ms to 84 ms, and idle CPU dropped to under 1% of one core.
 ---

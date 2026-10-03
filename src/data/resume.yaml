@@ -1,7 +1,7 @@
 # The single source for résumé facts. The home page, the /resume page (Phase 4)
 # and the print PDF all read from here. Projects are referenced by slug and
 # described in their own folders under src/content/projects/.
-# Phone number left out on purpose.
+# The phone number is left out of the site pages (it is in public/resume.pdf by choice).
 
 contact:
   name: Sriganesh Srinivasan
