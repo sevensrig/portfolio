@@ -12,7 +12,12 @@ tldr:
   problem: Three Google Cast speakers in one room (a Nest Audio, a Google Home and the TV) each had their own volume, and adjusting them meant using a phone and unbalanced speaker volumes.
   built: A Spotify Car Thing with no WiFi, tunnelled over USB to a Flask server on a Raspberry Pi 2. The server drives all three speakers and proxies Spotify. The dial scales the whole mix, buttons recall presets, and there's a now-playing screen and a playlist grid.
   outcome: It runs 24/7 on the Pi. After profiling, dial-to-speaker latency fell from 1,177 ms to 84 ms, and idle CPU dropped to under 1% of one core.
+media:
+  hero: ./now-playing.png
 ---
+
+import nowPlaying from "./now-playing.png"
+import mixer from "./mixer.png"
 
 {/* DRAFT written from the repo's code and commit history. Edit freely, especially the "why" and anything in your own voice. */}
 
@@ -25,6 +30,15 @@ The Car Thing was Spotify's discontinued in-car gadget: a small touchscreen with
 - **Buttons 1–3:** recall presets (desk, bed, ambient). Press save, then a number, to store the current mix.
 - **Button 4:** flips to a now-playing screen with album art and playback controls.
 - **Back button:** opens a grid of playlist covers.
+
+<Gallery
+  items={[
+    { src: mixer, alt: "Mixer screen: three volume faders labelled NEST, HOME and CAST at 60, 50 and 70, under the DESK preset", caption: "The mixer, with the DESK preset active." },
+    { src: nowPlaying, alt: "Now Playing screen: album art, track title, a progress bar and playback controls", caption: "Now Playing, the home screen." },
+  ]}
+/>
+
+<p class="font-mono text-xs text-base-content/50">Screens rendered from the device's actual web app, with sample data.</p>
 
 ## How it works
 

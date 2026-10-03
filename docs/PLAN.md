@@ -95,7 +95,7 @@ media:
 - **Zoom → Jira agent:** won SimpliSafe's company-wide AI hackathon. An agentic pipeline turns Zoom transcripts into Jira ticket updates, using Ollama and a Jira Cloud API integration layer.
 - 1–2 more still to be chosen.
 
-## Résumé data (from Sriganesh_Srinivasan_Resume.pdf; phone number left out on purpose)
+## Résumé data (from Sriganesh_Srinivasan_Resume.pdf; the phone number stays off the site pages, though public/resume.pdf includes it by choice)
 - **Contact:** Boston, MA · ganeshvasan14@gmail.com · GitHub · LinkedIn · available to start May 2027
 - **Education:** Northeastern University, BS in Computer Science, concentration in AI. Expected May 2027. GPA 3.67.
 - **Fenwick & West, Business Innovation Intern (Jun–Aug 2026)**
@@ -125,7 +125,7 @@ media:
 
 ## Phases
 1. ✅ Scaffold Astro, Tailwind and daisyUI. Add the creme theme and Work Sans. Define the project and résumé schemas.
-2. Build the project page with SmartRoomThing as the pilot (TL;DR card, MDX story, gallery, video). Write the R2 media script. *(Done 2026-10-03: page layout (title → meta → hero video or image → TL;DR grid → story → next project) and the story components `Callout` (types broke / lesson / note), `Figure`, `Gallery`, `Video` and `Timeline`, available in every MDX file without imports. SmartRoomThing's story is drafted from its repo history. Still to do: photos and video for SmartRoomThing, R2 setup with `PUBLIC_MEDIA_BASE`, and the media script.)*
+2. Build the project page with SmartRoomThing as the pilot (TL;DR card, MDX story, gallery, video). Write the R2 media script. *(Done 2026-10-03: page layout (title → meta → hero video or image → TL;DR grid → story → next project) and the story components `Callout` (types broke / lesson / note), `Figure`, `Gallery`, `Video` and `Timeline`, available in every MDX file without imports. SmartRoomThing's story is drafted from its repo history. SmartRoomThing has screenshots of its mixer and Now Playing screens, rendered from the real web app with sample data (the Now Playing one is the cover for now). Still to do: real photos and video for SmartRoomThing, R2 setup with `PUBLIC_MEDIA_BASE`, and the media script.)*
 3. ✅ Build the home page from the mockup. ⬜ Deploy to Vercel.
 4. Build the résumé page and print PDF.
 5. Migrate the remaining projects.
