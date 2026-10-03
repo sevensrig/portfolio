@@ -6,6 +6,8 @@ Paste everything below the line into the agent session where a project was built
 
 I'm adding this project to my portfolio website, which is aimed at recruiters hiring entry-level software engineers. Each project gets a page with a 30-second summary and a longer case study. Please gather everything needed for that page.
 
+Along with what it does, I want the specific choices I made (and why) and the problems I ran into. Look in commit messages, code comments (TODO, FIXME, HACK, "workaround"), docs, and what we discussed in this session.
+
 **Ground rules**
 - Use only what you can verify: this repo's code, its git history (`git log --stat --format='%n=== %h %ad%n%B' --date=short`, all branches), its docs, and what we did together in this session.
 - Mark anything you're inferring with **(inferred)**. Never invent numbers; if a number isn't measured anywhere, say so.
@@ -32,8 +34,8 @@ I'm adding this project to my portfolio website, which is aimed at recruiters hi
 - **What it does:** how someone uses it, step by step.
 - **How it works:** the main pieces and how data flows between them. Name key libraries, models, APIs or hardware. Include rough sizes (files, lines, endpoints, tests).
 - **Timeline:** 3–6 dated milestones from git history.
-- **What broke (most important):** 2–4 real problems, bugs or dead ends. For each, give the symptom, how it was tracked down, the fix, and what it taught me. Quote short phrases from commit messages where they help.
-- **Decisions and trade-offs:** choices made and alternatives rejected, with reasons.
+- **Decisions I made:** the notable choices (framework, libraries, services, hardware, architecture, test strategy and so on). For each, give what I chose, the alternatives, and my reason. If the reason isn't written down anywhere, say **(inferred)**.
+- **Problems I ran into:** 2–4 real bugs, failed approaches or dead ends. For each, give the symptom, how I tracked it down, the fix, and what it taught me. Quote short phrases from commit messages where they help.
 - **Numbers worth citing:** every concrete, verifiable metric (accuracy, latency, dataset size, test counts, coverage, cost), each with where it comes from.
 - **What's next:** unfinished work, known limits, ideas.
 
