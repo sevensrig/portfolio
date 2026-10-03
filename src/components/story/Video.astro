@@ -15,21 +15,23 @@ interface Props {
   caption?: string
   loop?: boolean
   wide?: boolean
+  /** Tall phone clips: keep them narrow and centered. */
+  portrait?: boolean
   class?: string
 }
-const { src, poster, caption, loop = false, wide = false, class: className } = Astro.props
+const { src, poster, caption, loop = false, wide = false, portrait = false, class: className } = Astro.props
 const hasExt = /\.[a-z0-9]+$/i.test(src)
 const sources = (hasExt ? [src] : [`${src}.webm`, `${src}.mp4`])
   .map((s) => ({ url: mediaUrl(s), type: s.endsWith(".webm") ? "video/webm" : "video/mp4" }))
   .filter((s): s is { url: string; type: string } => !!s.url)
-const posterUrl = (await getImage({ src: poster, width: 1440 })).src
+const posterUrl = (await getImage({ src: poster, width: Math.min(1440, poster.width) })).src
 const box = "w-full border border-base-content/20"
 const playback = loop
   ? { autoplay: true, muted: true, loop: true, playsinline: true }
   : { controls: true, playsinline: true }
 ---
 
-<figure class:list={[className ?? "my-12", wide && "md:-mx-24 lg:-mx-40"]}>
+<figure class:list={[className ?? "my-12", wide && "md:-mx-24 lg:-mx-40", portrait && "mx-auto max-w-sm"]}>
   {
     sources.length ? (
       <video class={box} poster={posterUrl} preload="metadata" {...playback}>

@@ -14,11 +14,16 @@ tldr:
   problem: TVs with Philips-style ambient lighting, or a dedicated capture box, cost extra. The smart bulbs and LED strip already in my room had no idea what was on screen.
   built: A Python tool that grabs the Mac's mirrored display, finds each screen region's dominant color with a hue histogram, smooths it, and sends it straight to two LIFX bulbs and a Govee strip over their local UDP protocols.
   outcome: It runs at 12 frames a second with no cloud or accounts. The lights fade smoothly, snap on scene cuts, and go back to how they were when you quit.
+media:
+  hero: ./room-poster.jpg
+  loop: { src: "r2:tv-ambilight/room", poster: ./room-poster.jpg }
 ---
 
 import Architecture from "../../../components/diagrams/TvAmbilightArchitecture.astro"
 
 import majorityVsAverage from "./majority-vs-average.png"
+import sampleFrame from "./sample-frame.png"
+import wallPoster from "./wall-poster.jpg"
 
 {/* DRAFT written from the repo's code and history. The "why" is inferred; edit it. */}
 
@@ -31,6 +36,8 @@ Mirror the Mac to the TV over AirPlay or HDMI, then run `ambilight.py run`. Thre
 - **A Govee LED strip** follows the right side.
 
 `discover` finds the lights on the network, and `setup` flashes each bulb red in turn and asks which one is which. Ctrl-C stops it and restores every light's original state.
+
+<Video src="r2:tv-ambilight/wall" poster={wallPoster} portrait caption="The strip behind the TV following the movie." />
 
 ## How it works
 
@@ -54,7 +61,9 @@ I chose to capture the Mac's screen instead of buying an HDMI capture card. The 
 
 Averaging a region's pixels gives mud: a red scene with some blue in it averages to purple. So the tool picks the **majority** color instead. It sorts colorful pixels into 24 hue buckets, weighted by how saturated and bright they are, merges neighboring buckets, and takes the winner. Mostly grey regions fall back to white, which LIFX shows as a proper color temperature instead of a washed-out tint.
 
-<Figure src={majorityVsAverage} alt="Three pairs of color swatches. A plain average gives muddy mauve and grey-blue; the majority color gives vivid orange-red and blue." caption="My actual color-picking code run on a sample sunset frame (the cover image). A plain average is muddy; the majority color is what the scene looks like." />
+<Figure src={sampleFrame} alt="A generated sunset frame on a TV, with the three screen regions outlined and each light glowing in the color the code picked." caption="A generated sample frame with the three screen regions marked. The glows are the colors my code picked for each light." wide />
+
+<Figure src={majorityVsAverage} alt="Three pairs of color swatches. A plain average gives muddy mauve and grey-blue; the majority color gives vivid orange-red and blue." caption="The same frame: my actual color-picking code versus a plain average. A plain average is muddy; the majority color is what the scene looks like." />
 
 ## What broke
 
