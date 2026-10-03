@@ -46,8 +46,8 @@ const facts = [
         <p class="font-mono text-xs text-base-content/50">
           {yearRange(period.start, period.end)} · {role} · {statusLabel}
         </p>
-        {links.demo && <a href={links.demo} class="text-sm font-medium underline decoration-primary decoration-2 underline-offset-4">Live demo ↗</a>}
-        {links.github && <a href={links.github} class="text-sm font-medium underline decoration-primary decoration-2 underline-offset-4">Code ↗</a>}
+        {links.demo && <a href={links.demo} target="_blank" rel="noopener" class="text-sm font-medium underline decoration-primary decoration-2 underline-offset-4">Live link ↗</a>}
+        {links.github && <a href={links.github} target="_blank" rel="noopener" class="text-sm font-medium underline decoration-primary decoration-2 underline-offset-4">Code ↗</a>}
       </div>
     </header>
 

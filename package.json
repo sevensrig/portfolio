@@ -17,6 +17,7 @@
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.5",
     "daisyui": "^5.7.47",
+    "rehype-external-links": "^3.0.0",
     "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3",
     "yaml": "^2.9.1"
