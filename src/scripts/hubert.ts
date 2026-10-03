@@ -48,7 +48,8 @@ export function initHubert(root: HTMLElement) {
     const section = document.getElementById(target!)
     // Off the home page, go there instead and let the page apply the filter.
     if (!section) {
-      location.href = `/${filterTo ? `?filter=${filterTo}` : ""}#${target}`
+      const query = new URLSearchParams({ from: "hubert", ...(filterTo ? { filter: filterTo } : {}) })
+      location.href = `/?${query}#${target}`
       return
     }
     if (filterTo) setWorkFilter(filterTo)
@@ -89,8 +90,12 @@ export function initHubert(root: HTMLElement) {
     }, 2500 + Math.random() * 3000)
   })()
 
-  // Say hello every time the page opens; the bubble stays until clicked.
-  setTimeout(() => {
-    if (panel.hidden) say("Need a hand finding something?")
-  }, 800)
+  // Say hello whenever the home page opens (not on project pages); the bubble
+  // stays until clicked. Skip it when Hubert himself sent you here (?from=hubert).
+  const params = new URLSearchParams(location.search)
+  if (location.pathname === "/" && params.get("from") !== "hubert") {
+    setTimeout(() => {
+      if (panel.hidden) say("Need a hand finding something?")
+    }, 800)
+  }
 }

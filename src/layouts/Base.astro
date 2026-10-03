@@ -41,5 +41,15 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
     <slot />
     <Footer name={name} location={resume.contact.location} />
     <Hubert />
+    <script>
+      // Autoplaying loops (card and hero videos) stay on their poster for
+      // visitors who ask their device to reduce motion.
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.querySelectorAll<HTMLVideoElement>("video[autoplay]").forEach((v) => {
+          v.removeAttribute("autoplay")
+          v.pause()
+        })
+      }
+    </script>
   </body>
 </html>
