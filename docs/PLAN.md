@@ -13,10 +13,11 @@ These are the decisions from the first planning session (2026-10-01), which ran 
 | Framework | **Astro**. The owner knows React and Next.js and wants to learn Astro. React islands only where interactivity is needed. |
 | Styling | **Tailwind and daisyUI v5**, with a custom `creme` theme (below). |
 | Content | **MDX with a schema-checked frontmatter block**, in Astro content collections. Edited in a code editor and pushed to git; no CMS for now. |
-| Projects | 4–5 projects. **Every project has photos and video.** |
-| Résumé | A dedicated résumé page built from `resume.yaml`, with a print stylesheet for the PDF. |
+| Projects | **6–8 projects** (changed from 4–5 on 2026-10-03). **Every project has photos and video.** The home page shows one featured project, then the rest in a two-up grid; the filters matter more at this count. |
+| Résumé | `public/resume.pdf` opens in the browser's built-in PDF viewer in a new tab (no forced download). Later: a dedicated résumé page built from `resume.yaml`, with a print stylesheet for the PDF. |
 | Dark mode | **No.** Creme only. |
 | Repo | Public on GitHub: https://github.com/sevensrig/portfolio (`main`). |
+| Live site | https://portfolio-srig.vercel.app (Vercel, auto-deploys from `main`). |
 | Domain | Later. It'll come from the GitHub Student Pack (.me or .tech). Check the renewal price, since the free offer covers only year one. |
 | Hosting | Vercel (recommended; the MongoDB driver works well in Vercel's Node functions). |
 | Video | Not stored in git. Use **Cloudflare R2** (10 GB free, no bandwidth charges). An ffmpeg script compresses clips to MP4 and WebM and grabs poster frames. Images stay in the repo and Astro optimizes them at build time. |
@@ -124,7 +125,7 @@ media:
 
 ## Phases
 1. ✅ Scaffold Astro, Tailwind and daisyUI. Add the creme theme and Work Sans. Define the project and résumé schemas.
-2. Build the project page with SmartRoomThing as the pilot (TL;DR card, MDX story, gallery, video). Write the R2 media script. *(A basic project page exists: title, hero, TL;DR grid, MDX body.)*
+2. Build the project page with SmartRoomThing as the pilot (TL;DR card, MDX story, gallery, video). Write the R2 media script. *(Done 2026-10-03: page layout (title → meta → hero video or image → TL;DR grid → story → next project) and the story components `Callout` (types broke / lesson / note), `Figure`, `Gallery`, `Video` and `Timeline`, available in every MDX file without imports. SmartRoomThing's story is drafted from its repo history. Still to do: photos and video for SmartRoomThing, R2 setup with `PUBLIC_MEDIA_BASE`, and the media script.)*
 3. ✅ Build the home page from the mockup. ⬜ Deploy to Vercel.
 4. Build the résumé page and print PDF.
 5. Migrate the remaining projects.
@@ -136,18 +137,19 @@ media:
 - `src/data/resume.yaml`: contact, education, experience, project slugs and skills.
 - `src/layouts/Base.astro`: the page shell (head, header, footer, Hubert).
 - `src/components/`: `Hero`, `ShaderBackground`, `WorkSection`, `ProjectCard`, `ProjectMedia`, `ExperienceList`, `Contact`, `Hubert`, `Header`, `Footer`.
+- `src/components/story/`: the MDX story components (passed to `<Content components={…}>` in the project page).
+- `src/lib/media.ts`: resolves `r2:<path>` video sources using the `PUBLIC_MEDIA_BASE` env var.
 - `src/scripts/`: browser code bundled by Astro (`shader-background.ts`, `work-filters.ts`, `hubert.ts`). There are no React islands; everything is plain `<script>`.
 - `src/pages/index.astro` and `src/pages/projects/[slug].astro`.
 - Fonts are self-hosted through Fontsource (Work Sans Variable, JetBrains Mono 400), not Google Fonts.
 - `/?filter=<category>#work` opens the home page with a filter applied; Hubert uses it from other pages.
 
 ## Placeholders to fill in
-- `public/resume.pdf` (the Résumé button and "Full résumé" link point to it).
-- SmartRoomThing `tldr.problem` / `tldr.outcome`, and the Zoom → Jira `role`. Check the drafted Blind Draft `tldr.problem` and `role` too.
+- Review the drafted SmartRoomThing story (especially the "why"). Keep private details out: no IPs, Spotify secrets, usernames, or the dashboard branch's location data. Fill in the Zoom → Jira `role`. Check the drafted Blind Draft `tldr.problem` and `role` too.
 - Project cover photos (`media.hero`) and the long-form stories.
 - `site` in `astro.config.mjs` once the domain exists.
 
 ## Open questions
 - ~~GitHub repo name and visibility~~ Done: public at https://github.com/sevensrig/portfolio (2026-10-02).
-- Which 4–5 projects are final, and in what order?
+- Which 6–8 projects are final, and in what order?
 - Is there footage for every project, or do some need recording or a polished fallback?

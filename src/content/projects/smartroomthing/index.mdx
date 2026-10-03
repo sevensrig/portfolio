@@ -1,19 +1,87 @@
 ---
 title: SmartRoomThing
-tagline: A modded Spotify Car Thing that runs my room
-summary: A modded Spotify Car Thing that controls the volume of three Google Cast speakers, through a Flask server on a Raspberry Pi.
+tagline: A modded Spotify Car Thing that runs my room's speakers
+summary: A modded Spotify Car Thing that controls three Google Cast speakers through a Flask server on a Raspberry Pi 2. After profiling it, I cut dial-to-speaker latency from 1.2 seconds to 84 ms.
 status: active
-period: { start: 2025-06, end: null }
-role: Solo — hardware, backend
-stack: [Python, Flask, Raspberry Pi, Google Cast]
+period: { start: 2026-05, end: null }
+role: Solo — hardware, backend, UI
+stack: [Python, Flask, PyChromecast, Raspberry Pi, JavaScript, ADB, systemd]
 categories: [hardware, backend]
 order: 2
 tldr:
-  problem: TODO — what was annoying about controlling three Cast speakers before this.
-  built: A modded Spotify Car Thing that talks to a Flask server on a Raspberry Pi 2, which sets the volume on three Google Cast devices.
-  outcome: TODO — how it's used day to day.
+  problem: Three Google Cast speakers in one room (a Nest Audio, a Google Home and the TV) each had their own volume, and adjusting them meant a phone and a cloud round-trip.
+  built: A Spotify Car Thing with no WiFi, tunnelled over USB to a Flask server on a Raspberry Pi 2. The server drives all three speakers and proxies Spotify. The dial scales the whole mix, buttons recall presets, and there's a now-playing screen and a playlist grid.
+  outcome: It runs 24/7 on the Pi. After profiling, dial-to-speaker latency fell from 1,177 ms to 84 ms, and idle CPU dropped to under 1% of one core.
 ---
 
-{/* TODO: the long-form story. This is the pilot case study for Phase 2. */}
+{/* DRAFT written from the repo's code and commit history. Edit freely, especially the "why" and anything in your own voice. */}
 
-The full write-up is coming soon.
+## What it does
+
+The Car Thing was Spotify's discontinued in-car gadget: a small touchscreen with a big dial and four buttons. Mine sits on my desk and controls the room.
+
+- **Turn the dial:** all three speakers get louder or quieter together, keeping their balance.
+- **Tap a speaker's fader:** the dial controls just that one for a few seconds.
+- **Buttons 1–3:** recall presets (desk, bed, ambient). Press save, then a number, to store the current mix.
+- **Button 4:** flips to a now-playing screen with album art and playback controls.
+- **Back button:** opens a grid of playlist covers.
+
+## How it works
+
+The Car Thing has no WiFi and no internet, so everything goes through the Pi.
+
+- **The device** runs a single-page web app (vanilla HTML and JS, no build step) in the kiosk browser it ships with, Chromium 69. The hardware buttons arrive over a local websocket, and the dial arrives as scroll events.
+- **A USB tunnel** (`adb reverse`) is the device's only route to the Pi. A watchdog service keeps it alive.
+- **A Flask server on the Pi** keeps one persistent connection open to each speaker, with a writer thread per speaker that only ever sends the latest volume. It also proxies every Spotify call, so no secrets ever touch the device.
+- **systemd** restarts everything on boot. The screen turns its own backlight off whenever it can't reach the Pi.
+
+<Timeline
+  items={[
+    { date: "May 2026", text: "First version on my Mac, with Home Assistant in Docker, started whenever my monitor was plugged in." },
+    { date: "Jun 2026", text: "Moved to a Raspberry Pi 2 so it runs 24/7. Added playlists and speaker-group playback." },
+    { date: "Sep 2026", text: "Tracked down the volume runaway bug, rebuilt the USB tunnel watchdog, and profiled and overhauled performance for the Pi 2." },
+    { date: "Sep 2026", text: "Fixed Cast connections that died silently, and added a lint and test pipeline (28 tests)." },
+  ]}
+/>
+
+## What broke
+
+<Callout type="broke" title="The volume runaway">
+  One small volume change took the whole room from 4% to 100% in about 15 seconds, with nobody touching anything. The dial was also changing a laptop's volume in another room.
+
+  I tested each speaker on its own and as a group until the TV stood out. It was signed in to Spotify, so it counted as a Spotify Connect device, and volume changes were echoing back and forth between Cast and Spotify. Two workarounds in code each failed in their own way. The real fix was signing Spotify out of the TV, which cut the feedback loop at its source.
+
+  That fix had a cost: Spotify can only start playback on a device it already knows about. So the playlist grid now tries a list of fallback targets in order, and if none work it asks you to play something first, instead of showing a bare "ERROR".
+</Callout>
+
+<Callout type="broke" title="Connections that died silently">
+  Sometimes the faders moved and the status endpoint looked healthy, but the speakers ignored every command. Three things hid it: the status read cached volume levels, the writes were asynchronous and always reported success, and the exceptions had empty messages, so the logs said nothing.
+
+  Now every write checks that the socket is really connected and retries once on a fresh connection, and failures show up in the status the UI reads.
+</Callout>
+
+<Callout type="broke" title="A tunnel that lies">
+  My first attempt to restart the USB tunnel on reconnect (a udev rule) never fired, because the Car Thing shows up as a network adapter, not the device I was matching. Worse, `adb reverse` reports success even after the tunnel is dead. The watchdog now checks the tunnel's health with a real HTTP request through it.
+</Callout>
+
+## Making a Pi 2 fast
+
+The Pi 2 has a 900 MHz ARM chip and 1 GB of RAM, and turning the dial felt laggy. Before rewriting anything, I measured: a volume change took 1,177 ms of wall-clock time but only 47 ms of CPU. The server wasn't slow; it was waiting. So a rewrite in a faster language wasn't the answer.
+
+The fixes were about waiting less:
+- Reusing connections instead of reopening them.
+- Merging a burst of dial clicks into one request (10 clicks became 2 requests).
+- Caching album art.
+- Replacing a canvas-drawn UI with plain text.
+
+| | Before | After |
+|---|---|---|
+| Dial → speaker | 1,177 ms | 84 ms |
+| Album art | 364 ms | 86 ms |
+| Now playing | 394 ms | 225 ms |
+| UI render CPU | 5.2% | 0.1% |
+| Idle server CPU | ~1.3% | ~0.8% |
+
+## What I'd do next
+
+The lint and test pipeline (28 pytest tests, plus linters set up for the device's old Chromium) is on a branch waiting to be merged. I've also started a second screen, an HDMI dashboard driven by the same Pi.

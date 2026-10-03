@@ -1,0 +1,36 @@
+---
+// A video from R2. `loop` plays muted and silently on repeat, like a GIF;
+// otherwise it gets normal controls. Falls back to the poster if the media
+// base URL isn't configured yet.
+import { getImage } from "astro:assets"
+import type { ImageMetadata } from "astro"
+import { mediaUrl } from "../../lib/media"
+
+interface Props {
+  src: string
+  poster: ImageMetadata
+  caption?: string
+  loop?: boolean
+  wide?: boolean
+  class?: string
+}
+const { src, poster, caption, loop = false, wide = false, class: className } = Astro.props
+const url = mediaUrl(src)
+const posterUrl = (await getImage({ src: poster, width: 1440 })).src
+const box = "w-full border border-base-content/20"
+---
+
+<figure class:list={[className ?? "my-12", wide && "md:-mx-24 lg:-mx-40"]}>
+  {
+    url ? (
+      loop ? (
+        <video class={box} src={url} poster={posterUrl} autoplay muted loop playsinline preload="metadata" />
+      ) : (
+        <video class={box} src={url} poster={posterUrl} controls playsinline preload="metadata" />
+      )
+    ) : (
+      <img class={box} src={posterUrl} alt={caption ?? ""} />
+    )
+  }
+  {caption && <figcaption class="mt-3 font-mono text-xs text-base-content/50">{caption}</figcaption>}
+</figure>

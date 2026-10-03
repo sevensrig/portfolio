@@ -4,8 +4,8 @@ import mdx from "@astrojs/mdx"
 import tailwindcss from "@tailwindcss/vite"
 
 export default defineConfig({
-  // TODO: set to the real domain once it's bought (see docs/PLAN.md → Domain).
-  site: "https://example.com",
+  // Switch to the custom domain once it's connected (see docs/PLAN.md → Domain).
+  site: "https://portfolio-srig.vercel.app",
   integrations: [mdx()],
   vite: {
     plugins: [tailwindcss()],
