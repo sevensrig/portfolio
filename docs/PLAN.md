@@ -142,6 +142,7 @@ media:
 - `src/layouts/Base.astro`: the page shell (head, header, footer, Hubert).
 - `src/components/`: `Hero`, `ShaderBackground`, `WorkSection`, `ProjectCard`, `ProjectMedia`, `ExperienceList`, `Contact`, `Hubert`, `Header`, `Footer`.
 - `src/components/story/`: the MDX story components (passed to `<Content components={…}>` in the project page).
+- `src/components/diagrams/`: hand-drawn SVG architecture diagrams, one per project, styled by the `.dg` classes in `global.css` (creme, sharp 1px boxes, mono labels, black lines, orange dots where data leaves a component). Wrapped in the story `Diagram` component, which scrolls sideways on phones instead of shrinking labels.
 - `src/lib/media.ts`: resolves `r2:<path>` video sources using the `PUBLIC_MEDIA_BASE` env var.
 - `src/scripts/`: browser code bundled by Astro (`shader-background.ts`, `work-filters.ts`, `hubert.ts`). There are no React islands; everything is plain `<script>`.
 - `src/pages/index.astro` and `src/pages/projects/[slug].astro`.

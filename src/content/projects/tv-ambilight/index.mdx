@@ -16,6 +16,8 @@ tldr:
   outcome: It runs at 12 frames a second with no cloud or accounts. The lights fade smoothly, snap on scene cuts, and go back to how they were when you quit.
 ---
 
+import Architecture from "../../../components/diagrams/TvAmbilightArchitecture.astro"
+
 import majorityVsAverage from "./majority-vs-average.png"
 
 {/* DRAFT written from the repo's code and history. The "why" is inferred; edit it. */}
@@ -39,6 +41,10 @@ Every frame, about 12 times a second:
 3. **Pick each region's dominant color** (more below).
 4. **Smooth it** with an exponential moving average so the lights don't flicker, unless the color jumps by a lot. Then it's a scene cut, and the light snaps most of the way at once.
 5. **Send it** straight to the lights over UDP: a hand-built binary packet for LIFX, with a fade time so the bulb blends between frames itself, and a small JSON message for Govee.
+
+<Diagram caption="The whole loop runs on the Mac, 12 times a second. Nothing leaves the local network.">
+  <Architecture />
+</Diagram>
 
 I talk to the lights directly over the local network instead of through either brand's cloud API. That means no accounts, no internet dependency, and much lower latency. The LIFX client is about 100 lines of `struct` packing written against the published LAN protocol, rather than a library.
 

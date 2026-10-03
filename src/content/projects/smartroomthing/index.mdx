@@ -16,6 +16,8 @@ media:
   hero: ./now-playing.png
 ---
 
+import Architecture from "../../../components/diagrams/SmartRoomThingArchitecture.astro"
+
 import mixer from "./mixer.png"
 
 {/* DRAFT written from the repo's code and commit history. Edit freely, especially the "why" and anything in your own voice. */}
@@ -40,6 +42,10 @@ The Car Thing has no WiFi and no internet, so everything goes through the Pi.
 - **A USB tunnel** (`adb reverse`) is the device's only route to the Pi. A watchdog service keeps it alive.
 - **A Flask server on the Pi** keeps one persistent connection open to each speaker, with a writer thread per speaker that only ever sends the latest volume. It also proxies every Spotify call, so no secrets ever touch the device.
 - **systemd** restarts everything on boot. The screen turns its own backlight off whenever it can't reach the Pi.
+
+<Diagram caption="How the pieces talk. The Car Thing has no network of its own; everything goes through the Pi.">
+  <Architecture />
+</Diagram>
 
 <Timeline
   items={[

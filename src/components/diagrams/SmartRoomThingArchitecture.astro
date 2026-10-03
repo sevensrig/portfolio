@@ -1,0 +1,73 @@
+---
+// SmartRoomThing: Car Thing → USB tunnel → Flask on a Pi → Cast speakers and Spotify.
+const speakers = [
+  { y: 40, name: "Nest Audio" },
+  { y: 122, name: "Google Home" },
+  { y: 204, name: "Living-room TV" },
+]
+const pi = [
+  { y: 112, name: "Writer thread × 3", note: "one per speaker, latest volume only" },
+  { y: 184, name: "Spotify proxy", note: "secrets stay here · album-art cache" },
+  { y: 256, name: "Presets + status", note: "DESK · BED · AMBIENT" },
+  { y: 328, name: "adb-watch (systemd)", note: "keeps the USB tunnel alive" },
+]
+---
+
+<svg class="dg" viewBox="0 0 960 420" role="img" aria-labelledby="srt-title srt-desc">
+  <title id="srt-title">SmartRoomThing architecture</title>
+  <desc id="srt-desc">The Car Thing talks to a Flask server on a Raspberry Pi over a USB adb reverse tunnel. The server drives three Google Cast speakers over the local network and proxies the Spotify Web API over HTTPS.</desc>
+  <defs>
+    <marker id="srt-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="var(--color-base-content)" />
+    </marker>
+  </defs>
+
+  <!-- Car Thing -->
+  <rect class="dg-box" x="20" y="130" width="210" height="170" />
+  <text class="dg-kicker" x="38" y="156">SPOTIFY CAR THING</text>
+  <text class="dg-title" x="38" y="184">Dial + touchscreen</text>
+  <text class="dg-note" x="38" y="214">Vanilla JS web app</text>
+  <text class="dg-note" x="38" y="236">Kiosk Chromium 69</text>
+  <text class="dg-note" x="38" y="258">No WiFi, no internet</text>
+  <text class="dg-note" x="38" y="280">Screen sleeps if Pi is gone</text>
+
+  <!-- USB tunnel -->
+  <line class="dg-line" x1="232" y1="215" x2="328" y2="215" marker-start="url(#srt-arrow)" marker-end="url(#srt-arrow)" />
+  <text class="dg-edge" x="280" y="204" text-anchor="middle">USB</text>
+  <text class="dg-edge" x="280" y="234" text-anchor="middle">adb reverse</text>
+
+  <!-- Raspberry Pi -->
+  <rect class="dg-box" x="330" y="20" width="320" height="380" />
+  <text class="dg-kicker" x="350" y="46">RASPBERRY PI 2 · 24/7</text>
+  <text class="dg-title" x="350" y="74">Flask server</text>
+  <text class="dg-note" x="350" y="96">~1,050 lines of Python</text>
+  {pi.map((b) => (
+    <>
+      <rect class="dg-inner" x="350" y={b.y} width="280" height="56" />
+      <text class="dg-name" x="364" y={b.y + 24}>{b.name}</text>
+      <text class="dg-note" x="364" y={b.y + 44}>{b.note}</text>
+    </>
+  ))}
+
+  <!-- Writer threads → speakers -->
+  {speakers.map((s) => (
+    <path class="dg-line" d={`M630 140 H690 V${s.y + 32} H738`} marker-end="url(#srt-arrow)" />
+  ))}
+  <circle class="dg-dot" cx="630" cy="140" r="3.5" />
+  <text class="dg-edge" x="694" y="58" text-anchor="middle">CAST · LAN</text>
+  {speakers.map((s) => (
+    <>
+      <rect class="dg-box" x="740" y={s.y} width="200" height="64" />
+      <text class="dg-kicker" x="756" y={s.y + 24}>GOOGLE CAST</text>
+      <text class="dg-name" x="756" y={s.y + 46}>{s.name}</text>
+    </>
+  ))}
+
+  <!-- Spotify proxy → Spotify Web API -->
+  <path class="dg-line" d="M630 212 H670 V356 H738" marker-end="url(#srt-arrow)" />
+  <circle class="dg-dot" cx="630" cy="212" r="3.5" />
+  <text class="dg-edge" x="680" y="346">HTTPS</text>
+  <rect class="dg-cloud" x="740" y="320" width="200" height="72" />
+  <text class="dg-kicker" x="756" y="344">CLOUD</text>
+  <text class="dg-name" x="756" y="368">Spotify Web API</text>
+</svg>
