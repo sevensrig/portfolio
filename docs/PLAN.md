@@ -93,7 +93,11 @@ media:
 - **$20 Blind Draft:** a full-stack web game, Aug 2026–present. Server-authoritative remote play on Supabase (4 Deno Edge Functions, 6 Postgres migrations, row-level security so the shuffled deck stays on the server, conflict handling for simultaneous moves). 190+ tests across Vitest, real-Chromium component tests and Playwright E2E. A randomized simulation plays 840 full drafts per run, with 100% line coverage on the game engine. CI runs 4 parallel GitHub Actions jobs against a live Supabase stack, plus axe-core accessibility checks.
 - **SmartRoomThing:** a modded Spotify Car Thing that controls the volume of three Google Cast devices through a Flask server on a Raspberry Pi 2. Code is in `~/SmartRoomThing`, which has rich history and failure stories, and has hardware photos available. A good pilot case study.
 - **Zoom → Jira agent:** won SimpliSafe's company-wide AI hackathon. An agentic pipeline turns Zoom transcripts into Jira ticket updates, using Ollama and a Jira Cloud API integration layer.
-- 1–2 more still to be chosen.
+- **tv-ambilight** (`~/tv-ambilight`, github.com/sevensrig/tv-ambilight, Sep 2026). Added 2026-10-03.
+- **Bird_Id** (`~/Bird_Id`, github.com/sevensrig/Bird_Id, Mar 2026). Added 2026-10-03.
+- **Tech Trends News Agent** (`~/Tech-Trends-News-Agent`, a team repo under github.com/divyathoppae, Nov 2025). Added 2026-10-03; the write-up must say which parts Srig built.
+- More to come (target 6–8). Other candidates seen in the home folder: wifi-sensing, ESP32-CSI-Tool, NowPlayingRasPi, Deep-Sea-Exploration.
+- **Gathering material:** paste `docs/project-research-prompt.md` into the agent session where a project was built, then bring the reply here. For repos without such a session, a research agent reads the repo directly (as done for SmartRoomThing and Blind Draft).
 
 ## Résumé data (from Sriganesh_Srinivasan_Resume.pdf; the phone number stays off the site pages, though public/resume.pdf includes it by choice)
 - **Contact:** Boston, MA · ganeshvasan14@gmail.com · GitHub · LinkedIn · available to start May 2027
