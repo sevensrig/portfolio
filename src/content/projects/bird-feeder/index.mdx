@@ -1,0 +1,70 @@
+---
+title: Bird Feeder Detector
+tagline: Real-time bird species detection at a window feeder
+summary: An end-to-end computer vision pipeline. A Raspberry Pi captures motion at a window feeder, a YOLOv8 model trained on the labeled frames identifies 8 species, and a laptop runs detection on the live feed.
+status: archived
+period: { start: 2025-12, end: 2026-04 }
+role: Solo
+stack: [Python, YOLOv8, PyTorch, OpenCV, Roboflow, Google Colab, Weights & Biases, Raspberry Pi]
+categories: [ai, hardware]
+order: 4
+links:
+  github: https://github.com/sevensrig/Bird_Id
+tldr:
+  problem: I wanted to know which birds actually visit my window feeder, without watching it all day.
+  built: A Raspberry Pi 2 with a webcam saves a frame only when something moves. I label the frames in Roboflow, train a YOLOv8 detector on Colab's free GPU, and run it on a laptop against the live feed, drawing a box, species and confidence for every bird.
+  outcome: The detector covers 8 classes (seven birds plus squirrels). The second model reaches 0.67 mAP50 and 0.80 precision on its validation set. Live tests exposed a heavy bias toward sparrows, which is the next thing to fix.
+media:
+  hero: ./cover.jpg
+---
+
+import Architecture from "../../../components/diagrams/BirdIdArchitecture.astro"
+
+{/* DRAFT from the build notes, the repo, and the models' own training metrics. Edit freely. */}
+
+## What it does
+
+1. **Capture.** A Raspberry Pi 2 with a Logitech webcam watches the feeder. Every few seconds it compares the new frame to the last one, and saves it only if enough pixels changed: a bird arrived, moved or left.
+2. **Collect.** New frames go to the cloud, first through Google Drive with `rclone`, later straight into Roboflow with its SDK.
+3. **Label.** In Roboflow, auto-label draws rough boxes and I correct them by hand.
+4. **Train.** The labeled set goes to a Google Colab notebook, which fine-tunes YOLOv8n on a free T4 GPU.
+5. **Detect.** On my MacBook, `inference.py` runs the trained model on the webcam feed through PyTorch's Apple GPU backend. It draws a box with the species and confidence on each bird, and logs every session to Weights & Biases.
+
+## How it works
+
+The work is split by what each machine is good at. The Pi 2 is far too slow to run a neural network, so it only captures. That also makes it simple enough to leave running unattended for days. Training happens on a borrowed cloud GPU, and live detection runs on the laptop.
+
+<Diagram caption="Dashed boxes are cloud services; the Pi and the laptop run on site.">
+  <Architecture />
+</Diagram>
+
+Some choices along the way:
+
+- **Object detection, not classification.** Frames often hold more than one bird, so I needed a location and species for each bird, not one label per photo.
+- **Colab over a home GPU.** I planned a setup on a GTX 1050 Ti at my parents' house, with Docker, CUDA, a Tailscale VPN and rclone. That would have been a more impressive infrastructure story, but Colab's free T4 was faster and needs zero maintenance.
+- **Roboflow's free tier.** It made labeling much faster. The trade-off is that the dataset is public on Roboflow Universe, since the private plan is $249 a month.
+
+## Results
+
+Both models are YOLOv8n trained for 50 epochs at 640 px. These are each model's scores on its own validation set:
+
+| | V1 (March 7) | V2 (March 27) |
+|---|---|---|
+| Precision | 0.71 | 0.80 |
+| Recall | 0.65 | 0.61 |
+| mAP50 | 0.65 | 0.67 |
+| mAP50-95 | 0.43 | 0.45 |
+
+Validation scores only tell part of the story, though. The live tests below told me more.
+
+## What broke
+
+<Callout type="broke" title="Everything is a sparrow">
+  In a 17-minute live session (14,773 frames, birds in about 23% of them), the model labeled 3,605 detections as sparrows, 2 as mourning doves and 1 as a squirrel. The cause was the training data: about 8,000 sparrow images against 100–300 for every other species. The model learned that "sparrow" is almost always the right answer.
+
+  The plan is to undersample sparrows down to roughly the size of the next-largest class before building the next dataset, and to keep collecting the rarer species. It isn't fixed yet.
+</Callout>
+
+<Callout type="broke" title="The Pi couldn't open its camera">
+  On the Pi, OpenCV's default video backend threw GStreamer errors and never got a frame. Forcing the Linux video backend (`cv2.CAP_V4L2`) fixed it.
+</Callout>

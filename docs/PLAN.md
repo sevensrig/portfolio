@@ -20,7 +20,7 @@ These are the decisions from the first planning session (2026-10-01), which ran 
 | Live site | https://portfolio-srig.vercel.app (Vercel, auto-deploys from `main`). |
 | Domain | Later. It'll come from the GitHub Student Pack (.me or .tech). Check the renewal price, since the free offer covers only year one. |
 | Hosting | Vercel (recommended; the MongoDB driver works well in Vercel's Node functions). |
-| Video | Not stored in git. Use **Cloudflare R2** (10 GB free, no bandwidth charges). An ffmpeg script compresses clips to MP4 and WebM and grabs poster frames. Images stay in the repo and Astro optimizes them at build time. |
+| Video and media | Not stored in git. Bucket choice (2026-10-03): Cloudflare R2 recommended (free 10 GB, no bandwidth fees); Akamai/Linode Object Storage considered. `npm run media -- <file> <slug> [name]` (scripts/media.mjs) works with any S3-compatible bucket: it compresses video to MP4 + WebM (max 1280 px, audio stripped unless `--keep-audio`), saves a poster next to the project's MDX, and uploads with year-long cache headers. Settings live in `.env` (template: `.env.example`); `PUBLIC_MEDIA_BASE` must also be set in Vercel. In MDX, `<Video src="r2:<slug>/<name>">` serves WebM with an MP4 fallback. Project images stay in the repo for now so Astro optimizes them at build time. |
 | MongoDB and analytics | Later extras, and **never for storing content**. Ideas: per-project view counts, a public /stats page, Plausible or Umami. |
 
 ## Visual direction
@@ -94,7 +94,7 @@ media:
 - **SmartRoomThing:** ✅ case study written 2026-10-03. a modded Spotify Car Thing that controls the volume of three Google Cast devices through a Flask server on a Raspberry Pi 2. Code is in `~/SmartRoomThing`, which has rich history and failure stories, and has hardware photos available. A good pilot case study.
 - **Zoom → Jira agent:** won SimpliSafe's company-wide AI hackathon. An agentic pipeline turns Zoom transcripts into Jira ticket updates, using Ollama and a Jira Cloud API integration layer.
 - **tv-ambilight** ✅ case study written 2026-10-03 (`~/tv-ambilight`, github.com/sevensrig/tv-ambilight, Sep 2026). Cover and the majority-vs-average figure come from running the repo's real `dominant_color` code on a generated sample frame. Its Govee fixes are uncommitted in that repo; the write-up describes them.
-- **Bird_Id** (`~/Bird_Id`, github.com/sevensrig/Bird_Id, Mar 2026). Added 2026-10-03.
+- **Bird Feeder Detector** ✅ written 2026-10-03 (slug `bird-feeder`; repo github.com/sevensrig/Bird_Id). Material from the owner's own agent session plus the repo: validation metrics come from the checkpoints themselves (V1 Mar 7: P 0.71 / R 0.65 / mAP50 0.65; V2 Mar 27: P 0.80 / R 0.61 / mAP50 0.67), and live-session numbers from the local W&B run summaries. 8 classes. Cover is a YOLO training-batch mosaic the owner supplied; the pipeline diagram sits in "How it works". Period shown as 2025–2026; no "next steps" or "smaller ones" sections, by request. Never use the W&B sample-detection image: it shows the owner's face and room. The public repo only has the first commit; capture.py and the W&B inference changes are uncommitted there.
 - **Tech Trends News Agent** (`~/Tech-Trends-News-Agent`, a team repo under github.com/divyathoppae, Nov 2025). Added 2026-10-03; the write-up must say which parts Srig built.
 - More to come (target 6–8). Other candidates seen in the home folder: wifi-sensing, ESP32-CSI-Tool, NowPlayingRasPi, Deep-Sea-Exploration.
 - **Gathering material:** paste `docs/project-research-prompt.md` into the agent session where a project was built, then bring the reply here. For repos without such a session, a research agent reads the repo directly (as done for SmartRoomThing and Blind Draft).
@@ -143,6 +143,7 @@ media:
 - `src/components/`: `Hero`, `ShaderBackground`, `WorkSection`, `ProjectCard`, `ProjectMedia`, `ExperienceList`, `Contact`, `Hubert`, `Header`, `Footer`.
 - `src/components/story/`: the MDX story components (passed to `<Content components={…}>` in the project page).
 - `src/components/diagrams/`: hand-drawn SVG architecture diagrams, one per project, styled by the `.dg` classes in `global.css` (creme, sharp 1px boxes, mono labels, black lines, orange dots where data leaves a component). Wrapped in the story `Diagram` component, which scrolls sideways on phones instead of shrinking labels.
+- `scripts/media.mjs`: compresses and uploads media to the bucket (see Video and media).
 - `src/lib/media.ts`: resolves `r2:<path>` video sources using the `PUBLIC_MEDIA_BASE` env var.
 - `src/scripts/`: browser code bundled by Astro (`shader-background.ts`, `work-filters.ts`, `hubert.ts`). There are no React islands; everything is plain `<script>`.
 - `src/pages/index.astro` and `src/pages/projects/[slug].astro`.

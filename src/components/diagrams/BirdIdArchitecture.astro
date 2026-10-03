@@ -1,0 +1,37 @@
+---
+// Bird feeder detector: capture on a Pi → label in Roboflow → train on Colab
+// → live detection on a laptop. Dashed boxes are cloud services.
+const stages = [
+  { x: 20, kicker: "RASPBERRY PI 2", name: "capture.py", notes: ["Webcam at the feeder", "Saves a frame only", "when something moves"] },
+  { x: 255, kicker: "ROBOFLOW", name: "Label", notes: ["Auto-label draft boxes", "fixed by hand", "8 classes"] },
+  { x: 490, kicker: "GOOGLE COLAB · T4", name: "Train YOLOv8n", notes: ["50 epochs at 640 px", "Free GPU, nothing", "to maintain"] },
+  { x: 725, kicker: "MACBOOK · M1", name: "inference.py", notes: ["Live webcam feed", "Boxes + species + conf", "Sessions logged to W&B"] },
+]
+const edges = [215, 450, 685]
+---
+
+<svg class="dg" viewBox="0 40 960 220" role="img" aria-labelledby="bird-title bird-desc">
+  <title id="bird-title">Bird feeder detector pipeline</title>
+  <desc id="bird-desc">A Raspberry Pi with a webcam saves frames when motion is detected and uploads them. They are labeled in Roboflow, a YOLOv8n model is trained on a Google Colab T4 GPU, and the trained weights run live on a MacBook, which draws boxes with species and confidence and logs sessions to Weights and Biases.</desc>
+  <defs>
+    <marker id="bird-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="var(--color-base-content)" />
+    </marker>
+  </defs>
+
+  {stages.map((s, i) => (
+    <>
+      <rect class={i === 1 || i === 2 ? "dg-cloud" : "dg-box"} x={s.x} y="60" width="215" height="180" />
+      <text class="dg-kicker" x={s.x + 18} y="88">{s.kicker}</text>
+      <text class="dg-title" x={s.x + 18} y="118">{s.name}</text>
+      {s.notes.map((n, j) => <text class="dg-note" x={s.x + 18} y={150 + j * 22}>{n}</text>)}
+    </>
+  ))}
+
+  {edges.map((x) => (
+    <>
+      <line class="dg-line" x1={x} y1="150" x2={x + 38} y2="150" marker-end="url(#bird-arrow)" />
+      <circle class="dg-dot" cx={x} cy="150" r="3.5" />
+    </>
+  ))}
+</svg>

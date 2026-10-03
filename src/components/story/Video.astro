@@ -1,7 +1,10 @@
 ---
-// A video from R2. `loop` plays muted and silently on repeat, like a GIF;
-// otherwise it gets normal controls. Falls back to the poster if the media
-// base URL isn't configured yet.
+// A video from the media bucket. `loop` plays muted and silently on repeat,
+// like a GIF; otherwise it gets normal controls.
+//
+// `src` is "r2:<slug>/<name>" as printed by `npm run media`: WebM is offered
+// first (smaller), MP4 as the fallback. A src with an extension is used as is.
+// Falls back to the poster if PUBLIC_MEDIA_BASE isn't configured.
 import { getImage } from "astro:assets"
 import type { ImageMetadata } from "astro"
 import { mediaUrl } from "../../lib/media"
@@ -15,19 +18,23 @@ interface Props {
   class?: string
 }
 const { src, poster, caption, loop = false, wide = false, class: className } = Astro.props
-const url = mediaUrl(src)
+const hasExt = /\.[a-z0-9]+$/i.test(src)
+const sources = (hasExt ? [src] : [`${src}.webm`, `${src}.mp4`])
+  .map((s) => ({ url: mediaUrl(s), type: s.endsWith(".webm") ? "video/webm" : "video/mp4" }))
+  .filter((s): s is { url: string; type: string } => !!s.url)
 const posterUrl = (await getImage({ src: poster, width: 1440 })).src
 const box = "w-full border border-base-content/20"
+const playback = loop
+  ? { autoplay: true, muted: true, loop: true, playsinline: true }
+  : { controls: true, playsinline: true }
 ---
 
 <figure class:list={[className ?? "my-12", wide && "md:-mx-24 lg:-mx-40"]}>
   {
-    url ? (
-      loop ? (
-        <video class={box} src={url} poster={posterUrl} autoplay muted loop playsinline preload="metadata" />
-      ) : (
-        <video class={box} src={url} poster={posterUrl} controls playsinline preload="metadata" />
-      )
+    sources.length ? (
+      <video class={box} poster={posterUrl} preload="metadata" {...playback}>
+        {sources.map((s) => <source src={s.url} type={s.type} />)}
+      </video>
     ) : (
       <img class={box} src={posterUrl} alt={caption ?? ""} />
     )
