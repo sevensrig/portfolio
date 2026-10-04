@@ -12,6 +12,8 @@ interface Props {
   description?: string
   /** Show Hubert in the corner (the 404 page has its own, bigger Hubert). */
   hubert?: boolean
+  /** Social preview image: "home" or a project slug (see src/pages/og). */
+  og?: string
 }
 
 const resume = (await getEntry("resume", "resume"))!.data
@@ -20,6 +22,7 @@ const {
   title,
   description = `${name} — software engineer graduating May 2027. Projects, experience and résumé.`,
   hubert = true,
+  og = "home",
 } = Astro.props
 const fullTitle = title ? `${title} · ${name}` : name
 const canonical = new URL(Astro.url.pathname, Astro.site)
@@ -38,6 +41,12 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="srig.tech" />
+    <meta property="og:image" content={new URL(`/og/${og}.png`, Astro.site)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={fullTitle} />
+    <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body class="bg-base-100 text-base-content font-display antialiased">
     <Header name={name} />

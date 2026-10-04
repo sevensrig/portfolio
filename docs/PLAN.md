@@ -144,7 +144,7 @@ media:
 3. ✅ Build the home page from the mockup. ✅ Deployed to Vercel (portfolio-srig.vercel.app).
 4. Build the résumé page and print PDF.
 5. Migrate the remaining projects.
-6. Later: domain, analytics, MongoDB view counts, OG images, RSS.
+6. Later: analytics, MongoDB view counts, RSS. (Domain ✅ srig.tech. Social preview images ✅ 2026-10-04.)
 
 ## Codebase map (2026-10-02)
 - `src/content.config.ts`: the `projects` and `resume` collections and their Zod schemas. The `CATEGORIES` list here drives the work filters.
@@ -155,6 +155,7 @@ media:
 - `src/components/story/`: the MDX story components (passed to `<Content components={…}>` in the project page).
 - `src/components/diagrams/`: hand-drawn SVG architecture diagrams, one per project, styled by the `.dg` classes in `global.css` (creme, sharp 1px boxes, mono labels, black lines, orange dots where data leaves a component). Wrapped in the story `Diagram` component, which scrolls sideways on phones instead of shrinking labels.
 - `scripts/media.mjs`: compresses and uploads media to the bucket (see Video and media).
+- `src/lib/og.ts` + `src/pages/og/[slug].png.ts`: social preview images (1200×630), rendered at build with satori (layout → SVG with real fonts) and sharp (→ PNG): `/og/home.png` plus one per project, generated automatically for new projects. `Base` takes an `og` prop; project pages pass their slug. Fonts come from `@fontsource/work-sans` and `@fontsource/jetbrains-mono` .woff files (satori can't read woff2).
 - `src/lib/media.ts`: resolves `r2:<path>` video sources using the `PUBLIC_MEDIA_BASE` env var.
 - `src/scripts/`: browser code bundled by Astro (`shader-background.ts`, `work-filters.ts`, `hubert.ts`). There are no React islands; everything is plain `<script>`.
 - `src/pages/index.astro` and `src/pages/projects/[slug].astro`.
