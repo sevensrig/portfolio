@@ -1,0 +1,53 @@
+---
+title: VitalLink
+tagline: Edge AI patient monitoring on Verizon private 5G
+summary: Won the Verizon Smart Campus Competition. A design for ward-level patient monitoring where edge "Health Twins" flag deteriorating vitals locally, federated learning improves the models without moving patient data, and private 5G slicing keeps alerts flowing when hospital Wi-Fi is congested.
+status: archived
+period: { start: 2025-10, end: 2026-03 }
+role: Team of 3 · system design and pitch
+stack: [Edge computing, Federated learning, Private 5G, Verizon ThingSpace]
+categories: [ai]
+order: 6
+tldr:
+  problem: Hospital vitals are checked every 30–45 minutes, and nurses doing rounds every 4 hours miss 90% of hypoxemic events (Rowland et al., JMIR 2025). Shared Wi-Fi congests, staff are stretched thin, and centralizing patient data adds HIPAA risk.
+  built: A production-intent architecture and business case. A mini-PC "Health Twin" in each ward runs anomaly detection and short-term forecasting on the vitals from existing bedside monitors and alerts nurses locally. Wards share only model updates, and critical traffic gets its own private 5G slice.
+  outcome: Won the Verizon Smart Campus Competition at Northeastern, advancing through the video pitch, the poster round and the final presentations.
+media:
+  hero: ./presenting.jpg
+---
+
+import Architecture from "../../../components/diagrams/VitalLinkArchitecture.astro"
+import dashboard from "./dashboard.png"
+
+{/* DRAFT from the poster, the final-round deck and the presentation script. */}
+
+## The problem
+
+Picture a patient whose oxygen has been slowly dropping for 40 minutes, while the next scheduled check is still hours away. Continuous wireless monitoring is linked to nearly 3× lower odds of ICU transfer or in-hospital death (Rowland et al., JMIR 2025), but hospitals face four problems that feed into each other:
+
+- **Monitoring gaps:** conditions change in seconds, and checks happen every 30–45 minutes.
+- **Staff overload:** nurses can't simply do more manual checks.
+- **Unreliable networks:** shared hospital Wi-Fi congests exactly when it matters, and static allocation can't adapt.
+- **Privacy risk:** pooling raw vitals in the cloud creates a target for breaches and a HIPAA burden.
+
+## The design
+
+<Diagram caption="Dashed: Verizon's network. Raw vitals stay inside each ward; only model updates travel to the coordinator.">
+  <Architecture />
+</Diagram>
+
+- **A Health Twin in every ward.** It's a mini-PC that acts as the ward gateway and edge computer. It cleans up and stores recent vitals, runs anomaly detection and short-term forecasting, and raises alerts without a round trip to the cloud. If the central layer goes down, the ward keeps working.
+- **A simple dashboard for nurses.** Patient status, trends and a prioritized alert queue. Alerts have to be acknowledged or escalated, so none can quietly disappear.
+- **Federated learning across wards.** Each ward trains locally and sends only model updates. A central on-prem coordinator averages them (FedAvg) and sends the improved model back, so every ward learns from the others without pooling patient data.
+- **Network priority when it's scarce.** A private 5G network gives critical-care traffic its own slice. When capacity is tight, wards bid for priority by clinical urgency, with a fixed priority order as a deterministic fallback. Verizon ThingSpace manages each ward gateway's connection.
+
+<Figure src={dashboard} alt="Mockup of the VitalLink nurse dashboard: a ward patient list with critical and warning badges, one patient's vitals, an alert queue, and system status." caption="Our mockup of the nurse dashboard, with fictional patients." wide />
+
+## Making it adoptable
+
+We designed it to be cheap to pilot:
+- **No new bedside hardware.** It plugs into the monitors the hospital already has.
+- **One managed connection per ward,** not a SIM per device.
+- **About $1,000–3,000 to set up three wards,** using off-the-shelf Intel mini-PCs and an open-source software stack. After that, the main monthly cost is connectivity.
+
+We also built the business case: a per-ward monthly subscription, bundled connectivity and one-time onboarding, starting with a single ward and expanding hospital by hospital. In the final round I presented the impact and the case for building it on Verizon.

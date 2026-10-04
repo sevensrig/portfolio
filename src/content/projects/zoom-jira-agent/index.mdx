@@ -1,19 +1,42 @@
 ---
-title: Zoom → Jira Agent
-tagline: Meeting transcripts in, Jira updates out
-summary: Won SimpliSafe's company-wide AI hackathon. An agent pipeline turns meeting transcripts into Jira ticket updates.
+title: SimpliSync
+tagline: Zoom meeting transcripts in, Jira updates out
+summary: Won SimpliSafe's company-wide AI hackathon. A local AI agent reads a Zoom meeting transcript and turns it into Jira updates (comments, subtasks and blocker links) that a person approves before they post.
 status: shipped
-period: { start: 2026-01, end: 2026-06 }
-role: TODO — your role on the hackathon team
-stack: [Ollama, Jira Cloud API]
-categories: [ai, backend]
+period: { start: 2026-04, end: 2026-04 }
+role: Team of 3 · AI hackathon
+stack: [TypeScript, Next.js, React, Tailwind, Ollama, Jira Cloud REST API]
+categories: [ai, fullstack]
 order: 5
 tldr:
-  problem: Action items from Zoom meetings rarely make it into Jira.
-  built: An agentic pipeline that turns Zoom transcripts into Jira ticket updates, using Ollama and a Jira Cloud API integration layer.
+  problem: After a standup, someone has to remember every action item and blocker and type them into Jira. Updates lag behind the meeting, and dependency links get forgotten.
+  built: A Next.js app where you paste a Zoom transcript. A locally run LLM turns it into structured updates for the tickets mentioned, you swipe to accept or reject each one, and the approved ones post to Jira as comments, subtasks and issue links.
   outcome: Won SimpliSafe's company-wide AI hackathon.
+media:
+  hero: ./demo-poster.jpg
+  loop: { src: "r2:zoom-jira-agent/demo", poster: ./demo-poster.jpg }
 ---
 
-{/* TODO: the long-form story. */}
+import Architecture from "../../../components/diagrams/SimpliSyncArchitecture.astro"
 
-The full write-up is coming soon.
+{/* DRAFT from the hackathon deck and demo. Add which parts you built. */}
+
+## What it does
+
+1. **Paste** a meeting transcript.
+2. **Review** what the agent pulled out for each ticket it heard about: updates, action items and who was involved. Edit or remove anything.
+3. **Confirm** each ticket by swiping to accept or reject it.
+4. **Post.** Approved updates land in Jira as comments, new subtasks and "is blocked by" links between issues.
+
+The demo above runs on a sandbox Jira project with made-up tickets.
+
+## How it works
+
+<Diagram caption="Dashed: cloud. The transcript only goes to a model running on the same machine.">
+  <Architecture />
+</Diagram>
+
+Two choices shaped it:
+
+- **A locally run model.** Meeting transcripts are internal, so the LLM runs on the laptop through Ollama instead of a hosted API, and the transcript never leaves the machine.
+- **A person approves every write.** The agent proposes and a human confirms, ticket by ticket, before anything touches Jira. A wrong blocker link or a stray subtask costs more trust than the time it saves.
