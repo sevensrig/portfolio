@@ -1,0 +1,51 @@
+---
+// Shown for any URL that doesn't exist (Vercel serves 404.html automatically).
+import Base from "../layouts/Base.astro"
+---
+
+<Base title="Page not found" hubert={false}>
+  <main class="px-4 md:px-12 max-w-6xl mx-auto min-h-[calc(100svh-10rem)] py-24 flex flex-col md:flex-row items-center justify-center gap-12 md:gap-20">
+    <svg class="lost-hubert w-48 md:w-64 shrink-0" viewBox="0 0 120 92" aria-hidden="true">
+      <!-- Hubert, the same drawing as in the corner, holding a map -->
+      <g class="lost-bird">
+        <polygon points="21,12 25,2 29,4 26,12" fill="var(--color-primary)" />
+        <polygon points="5,28 0,37 5,39" fill="var(--color-neutral)" />
+        <rect x="4" y="12" width="40" height="38" fill="var(--color-neutral)" />
+        <rect x="12" y="26" width="6" height="7" fill="var(--color-base-100)" />
+        <rect x="27" y="24" width="7" height="9" fill="var(--color-base-100)" />
+        <polygon points="20,37 28,37 24,43" fill="var(--color-primary)" />
+        <g fill="var(--color-primary)">
+          <rect x="15" y="50" width="2" height="5" /><rect x="12" y="54" width="8" height="2" />
+          <rect x="31" y="50" width="2" height="5" /><rect x="28" y="54" width="8" height="2" />
+        </g>
+        <!-- The map he's holding, upside down to him -->
+        <g transform="translate(46 22) rotate(-8)">
+          <polygon points="0,4 22,0 44,4 66,0 66,46 44,50 22,46 0,50" fill="#fff" stroke="var(--color-base-content)" stroke-width="1" />
+          <line x1="22" y1="0" x2="22" y2="46" stroke="var(--color-base-content)" stroke-opacity=".2" />
+          <line x1="44" y1="4" x2="44" y2="50" stroke="var(--color-base-content)" stroke-opacity=".2" />
+          <path d="M8 38 C18 30, 14 18, 28 20 S 46 34, 54 14" fill="none" stroke="var(--color-base-content)" stroke-width="1.5" stroke-dasharray="3 3" />
+          <path d="M51 10 l6 6 M57 10 l-6 6" stroke="var(--color-primary)" stroke-width="2" />
+          <text x="30" y="44" font-size="10" font-weight="700" fill="var(--color-base-content)">?</text>
+        </g>
+        <polygon points="43,30 50,34 44,38" fill="var(--color-neutral)" />
+      </g>
+    </svg>
+
+    <div class="max-w-md text-center md:text-left">
+      <p class="font-mono text-xs uppercase tracking-widest text-base-content/50">404</p>
+      <h1 class="mt-4 font-semibold leading-[0.98] tracking-[-0.04em] text-[clamp(2.4rem,6vw,4.5rem)]">
+        This page flew the coop<span class="text-primary">.</span>
+      </h1>
+      <p class="mt-6 text-lg text-base-content/70">Hubert checked the map and couldn't find it either.</p>
+      <div class="mt-8 flex items-center justify-center md:justify-start gap-6 font-medium">
+        <a href="/" class="btn btn-primary font-semibold">Back home</a>
+        <a href="/#work" class="underline decoration-primary decoration-2 underline-offset-4">See the work</a>
+      </div>
+    </div>
+  </main>
+</Base>
+
+<style>
+  /* Still, with a puzzled tilt. */
+  .lost-bird { transform-box: view-box; transform-origin: 24px 56px; transform: rotate(-6deg); }
+</style>

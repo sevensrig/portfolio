@@ -1,7 +1,8 @@
 ---
 // Hubert: a small square bird fixed to the bottom-right corner. Clicking him
 // opens a menu of shortcuts for recruiters (jump to a home page section, or
-// filter the work). Behaviour lives in src/scripts/hubert.ts.
+// filter the work), flies to where he sends you, and has a few easter eggs.
+// Behaviour lives in src/scripts/hubert.ts.
 //
 // Each option names a home page section, an optional work filter, and what
 // Hubert says once he has taken you there.
@@ -29,6 +30,7 @@ const options = [
       ))}
     </ul>
   </div>
+  <span class="hubert-zzz" aria-hidden="true"><span>z</span><span>z</span><span>z</span></span>
   <button type="button" class="hubert-button" aria-label="Open page guide" aria-expanded="false" aria-controls="hubert-panel">
     <svg class="hubert-body" width="48" height="58" viewBox="0 0 48 58" aria-hidden="true">
       <polygon class="hubert-tuft" points="21,12 25,2 29,4 26,12" fill="var(--color-primary)" />
@@ -76,6 +78,30 @@ const options = [
   .hubert.happy .hubert-body { animation: hubert-hop .5s ease-out; }
   .hubert.blink .hubert-eye { transform: scaleY(.1); }
 
+  /* Flying: wings beat the whole way. */
+  .hubert.flying .hubert-body { animation: none; }
+  .hubert.flying .hubert-wing-l { animation: hubert-flap-l .16s ease-in-out infinite; }
+  .hubert.flying .hubert-wing-r { animation: hubert-flap-r .16s ease-in-out infinite; }
+
+  /* Perched beside a heading near the top: the bubble hangs below him instead. */
+  .hubert.perched .hubert-bubble { bottom: auto; top: calc(100% + 14px); right: auto; left: 0; transform-origin: 28px -8px; }
+  .hubert.perched .hubert-bubble::after {
+    right: auto; left: 23px; bottom: auto; top: -6px; border: 0;
+    border-left: 1px solid var(--color-base-content); border-top: 1px solid var(--color-base-content);
+  }
+
+  /* Easter egg: too many clicks. */
+  .hubert.dizzy .hubert-body { animation: hubert-spin .9s ease-in-out; }
+  .hubert.dizzy .hubert-eye { transform: rotate(45deg) scale(.8); }
+
+  /* Easter egg: late at night. */
+  .hubert.sleepy .hubert-eye { transform: scaleY(.15); }
+  .hubert-zzz { display: none; position: absolute; right: -2px; top: -18px; font: 600 11px/1 var(--font-mono); color: var(--color-base-content); pointer-events: none; }
+  .hubert.sleepy .hubert-zzz { display: block; }
+  .hubert-zzz span { display: inline-block; opacity: 0; animation: hubert-zzz 2.4s ease-out infinite; }
+  .hubert-zzz span:nth-child(2) { animation-delay: .8s; font-size: 13px; }
+  .hubert-zzz span:nth-child(3) { animation-delay: 1.6s; font-size: 15px; }
+
   .hubert-bubble, .hubert-panel {
     position: absolute; right: 0; bottom: calc(100% + 10px);
     background: var(--color-base-100); border: 1px solid var(--color-base-content); color: var(--color-base-content);
@@ -111,8 +137,11 @@ const options = [
   @keyframes hubert-flap-l { 50% { transform: rotate(30deg); } }
   @keyframes hubert-flap-r { 50% { transform: rotate(-30deg); } }
   @keyframes hubert-pop { from { transform: scale(.6); opacity: 0; } }
+  @keyframes hubert-spin { to { transform: rotate(720deg); } }
+  @keyframes hubert-zzz { 0% { opacity: 0; transform: translate(0, 4px); } 30% { opacity: .7; } 100% { opacity: 0; transform: translate(6px, -10px); } }
   @keyframes hubert-hop { 30% { transform: translateY(-8px); } 60% { transform: translateY(0); } 80% { transform: translateY(-2px); } }
   @media (prefers-reduced-motion: reduce) {
-    .hubert-body, .hubert-tuft, .hubert-wing, .hubert-bubble { animation: none !important; }
+    .hubert-body, .hubert-tuft, .hubert-wing, .hubert-bubble, .hubert-zzz span { animation: none !important; }
+    .hubert-zzz span { opacity: .6; }
   }
 </style>

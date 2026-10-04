@@ -1,8 +1,24 @@
 // Behaviour for src/components/Hubert.astro: the menu, speech bubble, blinking,
-// and eyes that follow the pointer.
+// eyes that follow the pointer, flying to where he sends you, and easter eggs.
 import { setWorkFilter } from "./work-filters"
 
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches
+const wait = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+// Where an element's text will sit once the page finishes scrolling it into view
+// (sections stop 2.5rem below the top; see [id] in global.css), so Hubert can
+// take off at the same moment the scroll starts.
+function landingRect(el: HTMLElement) {
+  const range = document.createRange()
+  range.selectNodeContents(el)
+  const now = range.getBoundingClientRect()
+  const section = el.closest<HTMLElement>("[id]") ?? el
+  const margin = parseFloat(getComputedStyle(section).scrollMarginTop) || 0
+  const maxScroll = document.documentElement.scrollHeight - innerHeight
+  const finalScroll = Math.min(Math.max(scrollY + section.getBoundingClientRect().top - margin, 0), maxScroll)
+  const shift = scrollY - finalScroll
+  return { right: now.right, bottom: now.bottom + shift }
+}
 
 export function initHubert(root: HTMLElement) {
   const button = root.querySelector<HTMLButtonElement>(".hubert-button")!
@@ -20,14 +36,26 @@ export function initHubert(root: HTMLElement) {
     bubble.hidden = false
     if (ms) bubbleTimer = window.setTimeout(() => (bubble.hidden = true), ms)
   }
-  bubble.addEventListener("click", () => {
+  const hush = () => {
     clearTimeout(bubbleTimer)
     bubble.hidden = true
-  })
+  }
+  bubble.addEventListener("click", hush)
+
+  const flash = (cls: string, ms: number) => {
+    root.classList.add(cls)
+    setTimeout(() => root.classList.remove(cls), ms)
+  }
+
+  // Easter egg: between 10 pm and 6 am (the visitor's time) he's sleepy until woken.
+  const hour = new Date().getHours()
+  const sleepy = hour >= 22 || hour < 6
+  if (sleepy) root.classList.add("sleepy")
+  const wake = () => root.classList.remove("sleepy")
 
   function open() {
-    clearTimeout(bubbleTimer)
-    bubble.hidden = true
+    hush()
+    wake()
     panel.hidden = false
     button.setAttribute("aria-expanded", "true")
     button.setAttribute("aria-label", "Close page guide")
@@ -40,7 +68,64 @@ export function initHubert(root: HTMLElement) {
     if (refocus) button.focus()
   }
 
-  button.addEventListener("click", () => (panel.hidden ? open() : close()))
+  // Fly to a section's heading, perch there while saying something, fly home.
+  let flying = false
+  async function flyTo(section: HTMLElement, reply?: string) {
+    if (flying) return
+    if (reducedMotion) {
+      if (reply) say(reply, 3500)
+      return
+    }
+    flying = true
+
+    // Perch at the end of the heading's text, feet on its baseline.
+    const heading = section.matches("h1, h2, h3, a")
+      ? section
+      : (section.querySelector<HTMLElement>("h1, h2, h3") ?? section)
+    const text = landingRect(heading)
+    const home = root.getBoundingClientRect()
+    const left = Math.min(Math.max(text.right + 16, 8), innerWidth - home.width - 8)
+    const top = Math.min(Math.max(text.bottom - home.height + 6, 8), innerHeight - home.height - 8)
+    const dx = left - home.left
+    const dy = top - home.top
+    const at = (x: number, y: number) => ({ transform: `translate(${x}px, ${y}px)` })
+    const flight = { duration: 900, easing: "ease-in-out", fill: "forwards" as const }
+
+    hush()
+    root.classList.add("flying")
+    await root.animate([at(0, 0), at(dx / 2, dy / 2 - 90), at(dx, dy)], flight).finished
+    root.classList.remove("flying")
+    root.classList.add("perched")
+    if (reply) say(reply)
+    await wait(1800)
+    hush()
+
+    root.classList.remove("perched")
+    root.classList.add("flying")
+    await root.animate([at(dx, dy), at(dx / 2, dy / 2 - 90), at(0, 0)], flight).finished
+    root.getAnimations().forEach((a) => a.cancel())
+    root.classList.remove("flying")
+    flash("happy", 500)
+    flying = false
+  }
+
+  // Easter egg: five quick clicks make him dizzy.
+  let clicks: number[] = []
+  button.addEventListener("click", () => {
+    if (flying) return
+    const now = Date.now()
+    clicks = [...clicks.filter((t) => now - t < 2000), now]
+    if (clicks.length >= 5) {
+      clicks = []
+      close()
+      flash("dizzy", 900)
+      say("Whoa… I'm seeing two of you.", 2500)
+      return
+    }
+    if (panel.hidden) open()
+    else close()
+  })
+
   panel.addEventListener("click", (e) => {
     const item = (e.target as Element).closest<HTMLButtonElement>("[data-target]")
     if (!item) return
@@ -53,18 +138,47 @@ export function initHubert(root: HTMLElement) {
       return
     }
     if (filterTo) setWorkFilter(filterTo)
-    section.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" })
     close()
-    say(reply!, 3500)
-    root.classList.add("happy")
-    setTimeout(() => root.classList.remove("happy"), 600)
+    // The work filters just scroll and answer from the corner; everything else gets a flight.
+    if (target === "work") {
+      section.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" })
+      say(reply!, 3500)
+      flash("happy", 600)
+    } else {
+      flyTo(section, reply) // measures before the scroll moves anything
+      section.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" })
+    }
   })
+
+  // In-page links (the header's Experience, for example) send him too, except to
+  // the work section, which he only points at from the corner.
+  document.addEventListener("click", (e) => {
+    const link = (e.target as Element).closest<HTMLAnchorElement>("a[href*='#']")
+    if (!link || root.contains(link) || link.target === "_blank") return
+    const url = new URL(link.href)
+    if (url.pathname !== location.pathname || !url.hash) return
+    const section = document.getElementById(url.hash.slice(1))
+    if (section && section.id !== "work") flyTo(section)
+  })
+
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && !panel.hidden) close({ refocus: true })
   })
   document.addEventListener("pointerdown", (e) => {
     if (!panel.hidden && !root.contains(e.target as Node)) close()
   })
+
+  // Easter egg: hovering the bird feeder project gets a chirp, once per visit.
+  document.querySelector('a[href="/projects/bird-feeder/"]')?.addEventListener(
+    "pointerenter",
+    () => {
+      if (flying || !panel.hidden || !bubble.hidden) return
+      wake()
+      flash("happy", 600)
+      say("A fellow bird!", 2500)
+    },
+    { once: true },
+  )
 
   // Eyes follow the pointer a couple of pixels.
   window.addEventListener(
@@ -95,7 +209,7 @@ export function initHubert(root: HTMLElement) {
   const params = new URLSearchParams(location.search)
   if (location.pathname === "/" && params.get("from") !== "hubert") {
     setTimeout(() => {
-      if (panel.hidden) say("Need a hand finding something?")
+      if (panel.hidden) say(sleepy ? "*yawn* Need a hand finding something?" : "Need a hand finding something?")
     }, 800)
   }
 }

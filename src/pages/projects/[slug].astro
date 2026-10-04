@@ -55,7 +55,7 @@ const facts = [
       media.loop ? (
         <story.Video src={media.loop.src} poster={media.loop.poster} loop class="mt-12" />
       ) : (
-        <ProjectMedia src={media.hero} alt={title} aspect="wide" class="mt-12" />
+        <ProjectMedia src={media.hero} alt={title} aspect="wide" position={media.heroPosition} class="mt-12" />
       )
     }
 

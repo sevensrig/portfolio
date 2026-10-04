@@ -1,0 +1,61 @@
+---
+// This site: typed content → static Astro build on Vercel; media → R2 behind
+// Cloudflare's cache. Both meet in the browser.
+const rows = [
+  {
+    y: 40,
+    steps: [
+      { kicker: "GIT", name: "Content", note: "MDX + YAML, typed" },
+      { kicker: "ASTRO BUILD", name: "Static HTML", note: "optimized images" },
+      { kicker: "VERCEL CDN", name: "srig.tech", note: "pages, tiny scripts", cloud: true },
+    ],
+  },
+  {
+    y: 210,
+    steps: [
+      { kicker: "MY LAPTOP", name: "Raw video", note: "phone or screen clips" },
+      { kicker: "npm run media", name: "ffmpeg", note: "MP4 + WebM + poster" },
+      { kicker: "CLOUDFLARE R2", name: "media.srig.tech", note: "cached at the edge", cloud: true },
+    ],
+  },
+]
+const xs = [20, 230, 440]
+---
+
+<svg class="dg" viewBox="0 0 960 330" role="img" aria-labelledby="web-title web-desc">
+  <title id="web-title">How this site is built and served</title>
+  <desc id="web-desc">Content lives in git as MDX and YAML checked by Zod schemas. Astro builds it into static HTML with optimized images, served by Vercel at srig.tech. Videos are compressed with ffmpeg by an npm script on the laptop and uploaded to Cloudflare R2, served from media.srig.tech through Cloudflare's cache. The browser loads pages from Vercel and media from R2.</desc>
+  <defs>
+    <marker id="web-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="var(--color-base-content)" />
+    </marker>
+  </defs>
+
+  {rows.map((row) => (
+    row.steps.map((s, i) => (
+      <>
+        <rect class={s.cloud ? "dg-cloud" : "dg-box"} x={xs[i]} y={row.y} width="170" height="90" />
+        <text class="dg-kicker" x={xs[i] + 16} y={row.y + 24}>{s.kicker}</text>
+        <text class="dg-name" x={xs[i] + 16} y={row.y + 50}>{s.name}</text>
+        <text class="dg-note" x={xs[i] + 16} y={row.y + 72}>{s.note}</text>
+        {i < 2 ? (
+          <>
+            <line class="dg-line" x1={xs[i] + 170} y1={row.y + 45} x2={xs[i + 1] - 2} y2={row.y + 45} marker-end="url(#web-arrow)" />
+            <circle class="dg-dot" cx={xs[i] + 170} cy={row.y + 45} r="3.5" />
+          </>
+        ) : (
+          <path class="dg-line" d={`M610 ${row.y + 45} H680 V${row.y === 40 ? 120 : 210} H718`} marker-end="url(#web-arrow)" />
+        )}
+      </>
+    ))
+  ))}
+
+  <rect class="dg-box" x="720" y="40" width="220" height="260" />
+  <text class="dg-kicker" x="740" y="66">VISITOR</text>
+  <text class="dg-title" x="740" y="94">Browser</text>
+  <text class="dg-note" x="740" y="140">Pages from Vercel</text>
+  <text class="dg-note" x="740" y="164">Videos from R2</text>
+  <text class="dg-note" x="740" y="208">No framework runtime:</text>
+  <text class="dg-note" x="740" y="230">just the glow, filters</text>
+  <text class="dg-note" x="740" y="252">and Hubert scripts</text>
+</svg>

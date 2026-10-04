@@ -10,6 +10,8 @@ import Hubert from "../components/Hubert.astro"
 interface Props {
   title?: string
   description?: string
+  /** Show Hubert in the corner (the 404 page has its own, bigger Hubert). */
+  hubert?: boolean
 }
 
 const resume = (await getEntry("resume", "resume"))!.data
@@ -17,6 +19,7 @@ const name = resume.contact.name
 const {
   title,
   description = `${name} — software engineer graduating May 2027. Projects, experience and résumé.`,
+  hubert = true,
 } = Astro.props
 const fullTitle = title ? `${title} · ${name}` : name
 const canonical = new URL(Astro.url.pathname, Astro.site)
@@ -40,7 +43,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
     <Header name={name} />
     <slot />
     <Footer name={name} location={resume.contact.location} />
-    <Hubert />
+    {hubert && <Hubert />}
     <script>
       // Autoplaying loops (card and hero videos) stay on their poster for
       // visitors who ask their device to reduce motion.

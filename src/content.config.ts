@@ -54,6 +54,8 @@ const projects = defineCollection({
         .object({
           // TODO: make hero required once every project has photos.
           hero: image().optional(),
+          // Which part of the hero to keep when the wide banner crops it (CSS object-position).
+          heroPosition: z.string().optional(),
           loop: z.object({ src: r2, poster: image() }).optional(),
           gallery: z
             .array(

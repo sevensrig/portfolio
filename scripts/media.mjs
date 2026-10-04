@@ -60,11 +60,12 @@ if ([".mov", ".mp4", ".m4v", ".webm", ".mkv"].includes(ext)) {
   mkdirSync(out, { recursive: true })
   // Fit inside 1280×1280 without upscaling, so portrait clips shrink too.
   const scale = ["-vf", "scale='min(1280,iw)':'min(1280,ih)':force_original_aspect_ratio=decrease:force_divisible_by=2"]
-  const audio = keepAudio ? [] : ["-an"]
+  // iPhone clips carry a second, spatial audio track; keep only the first (stereo) one.
+  const streams = keepAudio ? ["-map", "0:v:0", "-map", "0:a:0?"] : ["-map", "0:v:0", "-an"]
   const trim = trimTo ? ["-to", trimTo] : [] // cut the clip off at this time
   console.log(`Compressing ${file} …`)
-  ffmpeg("-i", file, ...trim, ...scale, "-c:v", "libx264", "-crf", "26", "-preset", "slow", "-pix_fmt", "yuv420p", "-movflags", "+faststart", ...audio, join(out, `${name}.mp4`))
-  ffmpeg("-i", file, ...trim, ...scale, "-c:v", "libvpx-vp9", "-crf", "36", "-b:v", "0", "-row-mt", "1", ...audio, join(out, `${name}.webm`))
+  ffmpeg("-i", file, ...trim, ...streams, ...scale, "-c:v", "libx264", "-crf", "26", "-preset", "slow", "-pix_fmt", "yuv420p", "-movflags", "+faststart", "-c:a", "aac", "-b:a", "128k", join(out, `${name}.mp4`))
+  ffmpeg("-i", file, ...trim, ...streams, ...scale, "-c:v", "libvpx-vp9", "-crf", "36", "-b:v", "0", "-row-mt", "1", "-c:a", "libopus", "-b:a", "96k", join(out, `${name}.webm`))
   ffmpeg("-ss", posterAt, "-i", file, "-frames:v", "1", "-q:v", "3", ...scale, join(projectDir, `${name}-poster.jpg`))
   await upload(join(out, `${name}.webm`), `${slug}/${name}.webm`)
   await upload(join(out, `${name}.mp4`), `${slug}/${name}.mp4`)
