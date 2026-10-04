@@ -1,7 +1,7 @@
 ---
 title: TV Ambilight
 tagline: Room lights that follow what's on the TV
-summary: A Python tool that watches a Mac's mirrored screen and drives two LIFX bulbs and a Govee LED strip to match it, 12 times a second, over each brand's local network protocol, with no cloud involved.
+summary: A Python tool that watches a Mac's mirrored screen and drives three room lights, two LIFX bulbs and a Govee light, to match it, 12 times a second, over each brand's local network protocol, with no cloud involved.
 status: shipped
 period: { start: 2026-09, end: 2026-09 }
 role: Solo
@@ -11,8 +11,8 @@ order: 3
 links:
   github: https://github.com/sevensrig/tv-ambilight
 tldr:
-  problem: TVs with Philips-style ambient lighting, or a dedicated capture box, cost extra. The smart bulbs and LED strip already in my room had no idea what was on screen.
-  built: A Python tool that grabs the Mac's mirrored display, finds each screen region's dominant color with a hue histogram, smooths it, and sends it straight to two LIFX bulbs and a Govee strip over their local UDP protocols.
+  problem: TVs with Philips-style ambient lighting, or a dedicated capture box, cost extra. The smart lights already in my room had no idea what was on screen.
+  built: A Python tool that grabs the Mac's mirrored display, finds each screen region's dominant color with a hue histogram, smooths it, and sends it straight to two LIFX bulbs and a Govee light over their local UDP protocols.
   outcome: It runs at 12 frames a second with no cloud or accounts. The lights fade smoothly, snap on scene cuts, and go back to how they were when you quit.
 media:
   hero: ./room-poster.jpg
@@ -33,11 +33,11 @@ Mirror the Mac to the TV over AirPlay or HDMI, then run `ambilight.py run`. Thre
 
 - **A LIFX bulb** follows the top-left of the screen.
 - **A second LIFX bulb** follows the bottom-left.
-- **A Govee LED strip** follows the right side.
+- **A Govee light** follows the right side.
 
 `discover` finds the lights on the network, and `setup` flashes each bulb red in turn and asks which one is which. Ctrl-C stops it and restores every light's original state.
 
-<Video src="r2:tv-ambilight/wall" poster={wallPoster} portrait caption="The strip behind the TV following the movie." />
+<Video src="r2:tv-ambilight/wall" poster={wallPoster} portrait caption="The light next to the TV following the movie." />
 
 ## How it works
 
@@ -67,12 +67,12 @@ Averaging a region's pixels gives mud: a red scene with some blue in it averages
 
 ## What broke
 
-<Callout type="broke" title="The strip fell behind the picture">
-  The Govee strip lagged further and further behind the screen. I had been sending a new color whenever it changed, but the strip queues commands on the network and works through them one at a time, so a fast scene built up a backlog. The fix was to send at most 5 updates a second, and only when the color or brightness changes by a noticeable amount. The device's speed sets the limit, not my frame rate.
+<Callout type="broke" title="The Govee light fell behind the picture">
+  The Govee light lagged further and further behind the screen. I had been sending a new color whenever it changed, but the light queues commands on the network and works through them one at a time, so a fast scene built up a backlog. The fix was to send at most 5 updates a second, and only when the color or brightness changes by a noticeable amount. The device's speed sets the limit, not my frame rate.
 </Callout>
 
 <Callout type="broke" title="Washed-out colors in dark scenes">
-  On the strip, dark scenes came out as weak, pale colors. I was encoding brightness into the RGB values, so a dim red became something like (20, 3, 2), and the LEDs can't render that faithfully. Screen colors are also gamma-encoded while LED channels are linear. Now the tool sends the hue at full strength with 2.2 gamma correction, and sends brightness as its own command.
+  On the Govee light, dark scenes came out as weak, pale colors. I was encoding brightness into the RGB values, so a dim red became something like (20, 3, 2), and the LEDs can't render that faithfully. Screen colors are also gamma-encoded while LED channels are linear. Now the tool sends the hue at full strength with 2.2 gamma correction, and sends brightness as its own command.
 </Callout>
 
 <Callout type="broke" title="Saved settings froze old defaults">
@@ -83,4 +83,4 @@ A smaller one: without macOS's Screen Recording permission, captured frames come
 
 ## What I'd do next
 
-I haven't measured end-to-end latency (screen to light) yet, and that's the number that matters most for how it feels. I'd also like more regions, and to drive the LED strip's individual segments instead of one color.
+I haven't measured end-to-end latency (screen to light) yet, and that's the number that matters most for how it feels. I'd also like to split the screen into more regions, with a light for each.

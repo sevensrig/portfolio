@@ -31,6 +31,18 @@ experience:
       - Built a Python ETL pipeline over 3 data sources with custom scoring signals, surfacing $5M+ in cross-sell opportunities.
       - Built an LLM email agent using multi-source RAG to write client-specific legal case summaries, with 2-minute response times.
 
+  - company: Northeastern CAMD
+    role: Website Designer (part-time)
+    start: 2025-04
+    end: 2025-06
+    returned:
+      - { start: 2026-04, end: 2026-06 }
+    bullets:
+      - Developed and populated 50+ university web pages in WordPress for the College of Arts, Media and Design.
+      - Collaborated with students and faculty to collect and normalize content, streamlining how varied material landed on the pages.
+      - Standardized content formatting and modified CSS to keep the design consistent across pages.
+      - Returned for a second term in 2026 and trained my replacement for the following year.
+
   - company: SimpliSafe
     role: Software Engineer Co-op
     start: 2026-01

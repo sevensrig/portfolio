@@ -1,8 +1,8 @@
 ---
-import { yearRange } from "../lib/format"
+import { termYears } from "../lib/format"
 
 interface Props {
-  experience: { company: string; role: string; start: Date; end: Date | null }[]
+  experience: { company: string; role: string; start: Date; end: Date | null; returned?: { start: Date; end: Date | null }[] }[]
 }
 const { experience } = Astro.props
 ---
@@ -11,10 +11,10 @@ const { experience } = Astro.props
   <h2 class="font-mono text-xs uppercase tracking-widest text-base-content/50 mb-6">Experience</h2>
   <ol class="border-t border-base-content">
     {experience.map((job) => (
-      <li class="grid md:grid-cols-[1fr_2fr_auto] gap-1 md:gap-8 py-6 border-b border-base-content/15">
+      <li class="grid md:grid-cols-[1fr_2fr_6rem] gap-1 md:gap-8 py-6 border-b border-base-content/15">
         <span class="font-semibold">{job.company}</span>
         <span class="text-base-content/70">{job.role}</span>
-        <span class="font-mono text-xs text-base-content/50 md:pt-1">{yearRange(job.start, job.end)}</span>
+        <span class="font-mono text-xs text-base-content/50 md:pt-1 md:text-right">{termYears([job, ...(job.returned ?? [])])}</span>
       </li>
     ))}
   </ol>

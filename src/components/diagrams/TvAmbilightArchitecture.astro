@@ -12,13 +12,13 @@ const gap = 68
 const lights = [
   { y: 52, kicker: "LIFX BULB", name: "Top-left of screen", note: "UDP 56700 · binary" },
   { y: 160, kicker: "LIFX BULB", name: "Bottom-left of screen", note: "UDP 56700 · binary" },
-  { y: 268, kicker: "GOVEE LED STRIP", name: "Right of screen", note: "UDP 4003 · JSON · ≤ 5/s" },
+  { y: 268, kicker: "GOVEE LIGHT", name: "Right of screen", note: "UDP 4003 · JSON · ≤ 5/s" },
 ]
 ---
 
 <svg class="dg" viewBox="0 0 960 380" role="img" aria-labelledby="amb-title amb-desc">
   <title id="amb-title">TV Ambilight architecture</title>
-  <desc id="amb-desc">A Mac mirrors its display to the TV. Twelve times a second, a Python script captures the screen, crops black bars, picks the dominant color of three regions, smooths it, and sends it over UDP to two LIFX bulbs and a Govee LED strip on the local network.</desc>
+  <desc id="amb-desc">A Mac mirrors its display to the TV. Twelve times a second, a Python script captures the screen, crops black bars, picks the dominant color of three regions, smooths it, and sends it over UDP to two LIFX bulbs and a Govee light on the local network.</desc>
   <defs>
     <marker id="amb-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
       <path d="M0 0 L10 5 L0 10 z" fill="var(--color-base-content)" />

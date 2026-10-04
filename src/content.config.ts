@@ -99,6 +99,8 @@ const resume = defineCollection({
         role: z.string(),
         start: month,
         end: month.nullable(),
+        // Later terms in the same role (e.g. rehired the next year).
+        returned: z.array(z.object({ start: month, end: month.nullable() })).default([]),
         bullets: z.array(z.string()),
       }),
     ),

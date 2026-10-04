@@ -1,0 +1,39 @@
+---
+title: Tech Trends News Agent
+tagline: Ask the week's tech news a question
+summary: A RAG agent for technology news. It pulls headlines from NewsAPI, searches them with a TF-IDF engine written from scratch, answers questions with a small local LLM and cites its sources, and clusters the coverage into trending topics.
+status: archived
+period: { start: 2025-12, end: 2025-12 }
+role: Team of 2 · CS 4100 (AI)
+stack: [Python, Qwen2.5-1.5B, Hugging Face Transformers, NLTK, Streamlit, Google Colab]
+categories: [ai]
+order: 8
+links:
+  github: https://github.com/sevensrig/CS4100_Project
+tldr:
+  problem: Tech news moves fast and is spread across dozens of outlets, so keeping up means reading a lot of repetitive coverage.
+  built: A Streamlit app over live NewsAPI headlines. Questions retrieve the five most relevant articles through a TF-IDF search we wrote from scratch, and a local Qwen2.5-1.5B model answers from them with sources. A second view clusters the coverage into topics by which terms appear together.
+  outcome: A working end-to-end agent for our AI course final project. The model loads in about a minute on a Colab T4 GPU, and questions are answered in a few seconds.
+media:
+  hero: ./demo-poster.jpg
+  loop: { src: "r2:tech-trends-agent/demo", poster: ./demo-poster.jpg }
+---
+
+import Architecture from "../../../components/diagrams/TechTrendsArchitecture.astro"
+
+{/* Short on purpose: the project wasn't documented in much detail. */}
+
+## How it works
+
+<Diagram caption="Dashed: the external news API. Search, answers and topics all run in the notebook.">
+  <Architecture />
+</Diagram>
+
+- **Retrieval:** we fetch technology headlines from NewsAPI and preprocess them with NLTK (tokenize, drop stopwords, lemmatize).
+- **Search, from scratch:** a TF-IDF index with cosine similarity, with no search library. Weighting title words 3× noticeably improved which articles came back first, and ignoring terms that appear in fewer than 2% or more than 70% of articles filtered out the noise.
+- **Answers:** the top 5 articles go to Qwen2.5-1.5B-Instruct, running on the GPU rather than through a hosted API, and the answer shows which articles it came from.
+- **Topics:** terms that appear together across at least two articles are grouped into 5 topic clusters, each with 5 sub-trends, and shown as charts.
+
+## Limits
+
+The free NewsAPI tier caps how many articles you get (about 70–100 per fetch), and a 1.5B-parameter model sometimes gives generic answers. A larger model and more sources were the obvious next steps.

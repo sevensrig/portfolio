@@ -158,7 +158,10 @@ export function initHubert(root: HTMLElement) {
     const url = new URL(link.href)
     if (url.pathname !== location.pathname || !url.hash) return
     const section = document.getElementById(url.hash.slice(1))
-    if (section && section.id !== "work") flyTo(section)
+    if (!section || section.id === "work") return
+    // Say what his menu would say for the same section.
+    const reply = panel.querySelector<HTMLButtonElement>(`[data-target="${section.id}"]`)?.dataset.reply
+    flyTo(section, reply)
   })
 
   document.addEventListener("keydown", (e) => {

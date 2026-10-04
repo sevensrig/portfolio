@@ -2,9 +2,9 @@
 // SimpliSync: a Next.js app between a Zoom transcript, a local LLM and Jira.
 ---
 
-<svg class="dg" viewBox="0 0 960 300" role="img" aria-labelledby="ss-title ss-desc">
+<svg class="dg" viewBox="0 0 960 320" role="img" aria-labelledby="ss-title ss-desc">
   <title id="ss-title">SimpliSync architecture</title>
-  <desc id="ss-desc">A user pastes a Zoom transcript into a Next.js app. Its parse route sends the transcript to a locally running LLM through Ollama, which returns structured ticket updates. After the user reviews and approves them, a second route posts comments, issue links and subtasks to Jira Cloud.</desc>
+  <desc id="ss-desc">A user pastes a Zoom transcript into a Next.js app. Its parse route sends the transcript to a locally running LLM through Ollama, which returns structured ticket updates. Those updates feed the post route: after the user reviews and approves them, it posts comments, issue links and subtasks to Jira Cloud.</desc>
   <defs>
     <marker id="ss-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
       <path d="M0 0 L10 5 L0 10 z" fill="var(--color-base-content)" />
@@ -43,6 +43,11 @@
   <text class="dg-kicker" x="756" y="80">OLLAMA · ON THE LAPTOP</text>
   <text class="dg-name" x="756" y="104">Local LLM</text>
   <text class="dg-note" x="756" y="124">transcript never leaves</text>
+
+  <!-- LLM output comes back around to the post route -->
+  <path class="dg-line" d="M940 100 H952 V304 H450 V271" marker-end="url(#ss-arrow)" />
+  <circle class="dg-dot" cx="940" cy="100" r="3.5" />
+  <text class="dg-edge" x="700" y="298" text-anchor="middle">STRUCTURED UPDATES</text>
 
   <rect class="dg-cloud" x="740" y="170" width="200" height="88" />
   <text class="dg-kicker" x="756" y="194">JIRA CLOUD · REST API</text>
