@@ -75,7 +75,3 @@ I tested at three levels, each for a different reason:
 - **End-to-end tests** in Playwright run against the production build, never the dev server. The worst bug this project has had, a crash that left a page rendering perfectly with every button dead, only showed up in built output.
 
 CI runs these as 4 parallel jobs, so a red X says *what* broke. The end-to-end job boots a local Supabase stack and fails, rather than skips, if the online tests can't run.
-
-## What I'd do next
-
-Online play has been tested in separate browser sessions but not yet on two real phones. Next up: no test yet fires two moves at the exact same moment, end-to-end tests only cover Chromium, and a quit could offer a rematch instead of a dead end.

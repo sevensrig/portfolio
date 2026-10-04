@@ -1,7 +1,8 @@
 ---
-// Experience as a scannable list. Each row opens (native <details>, so it's
-// keyboard- and screen-reader-friendly with no script) to show a line of
-// context and the strongest bullets from src/data/resume.yaml.
+// A scannable list of roles (Experience; Leadership and community). Each row
+// opens (native <details>, so it's keyboard- and screen-reader-friendly with no
+// script) to show a line of context, bullets and an optional link, all from
+// src/data/resume.yaml. Anything after the list goes in the default slot.
 import { termYears } from "../lib/format"
 
 interface Job {
@@ -12,17 +13,20 @@ interface Job {
   returned?: { start: Date; end: Date | null }[]
   summary?: string
   bullets: string[]
+  link?: { label: string; href: string }
 }
 interface Props {
-  experience: Job[]
+  id: string
+  title: string
+  roles: Job[]
 }
-const { experience } = Astro.props
+const { id, title, roles } = Astro.props
 ---
 
-<section id="experience" class="pb-32">
-  <h2 class="font-mono text-xs uppercase tracking-widest text-base-content/50 mb-6">Experience</h2>
+<section id={id} class="pb-32">
+  <h2 class="font-mono text-xs uppercase tracking-widest text-base-content/50 mb-6">{title}</h2>
   <ol class="border-t border-base-content">
-    {experience.map((job) => (
+    {roles.map((job) => (
       <li class="border-b border-base-content/15">
         <details class="job group">
           <summary class="relative grid md:grid-cols-[1fr_2fr_6rem_1.5rem] gap-1 md:gap-8 py-6 pr-10 md:pr-0 cursor-pointer list-none">
@@ -41,13 +45,18 @@ const { experience } = Astro.props
                   <li class="relative pl-5 before:absolute before:left-0 before:top-[0.7em] before:h-px before:w-2.5 before:bg-base-content/40">{b}</li>
                 ))}
               </ul>
+              {job.link && (
+                <a href={job.link.href} target="_blank" rel="noopener" class="mt-4 inline-block font-medium underline decoration-primary decoration-2 underline-offset-4">
+                  {job.link.label} ↗
+                </a>
+              )}
             </div>
           </div>
         </details>
       </li>
     ))}
   </ol>
-  <a id="resume" href="/resume.pdf" target="_blank" rel="noopener" class="mt-8 inline-block font-medium underline decoration-primary decoration-2 underline-offset-4">View full résumé ↗</a>
+  <slot />
 </section>
 
 <style>

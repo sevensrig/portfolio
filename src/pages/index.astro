@@ -3,17 +3,20 @@ import { getEntry } from "astro:content"
 import Base from "../layouts/Base.astro"
 import Hero from "../components/Hero.astro"
 import WorkSection from "../components/WorkSection.astro"
-import ExperienceList from "../components/ExperienceList.astro"
+import RoleList from "../components/RoleList.astro"
 import Contact from "../components/Contact.astro"
 
-const { contact, experience } = (await getEntry("resume", "resume"))!.data
+const { contact, experience, community } = (await getEntry("resume", "resume"))!.data
 ---
 
 <Base>
   <Hero github={contact.github} linkedin={contact.linkedin} />
   <main class="px-4 md:px-12 max-w-6xl mx-auto pt-32">
     <WorkSection />
-    <ExperienceList experience={experience} />
+    <RoleList id="experience" title="Experience" roles={experience}>
+      <a id="resume" href="/resume.pdf" target="_blank" rel="noopener" class="mt-8 inline-block font-medium underline decoration-primary decoration-2 underline-offset-4">View full résumé ↗</a>
+    </RoleList>
+    <RoleList id="community" title="Leadership and community" roles={community} />
     <Contact email={contact.email} />
   </main>
 </Base>

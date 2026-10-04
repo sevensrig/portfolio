@@ -70,6 +70,19 @@ const projects = defineCollection({
     }),
 })
 
+// One row in Experience or in Leadership and community.
+const role = z.object({
+  company: z.string(),
+  role: z.string(),
+  start: month,
+  end: month.nullable(),
+  summary: z.string().optional(), // one line of context shown when the row opens
+  // Later terms in the same role (e.g. rehired the next year).
+  returned: z.array(z.object({ start: month, end: month.nullable() })).default([]),
+  bullets: z.array(z.string()),
+  link: z.object({ label: z.string(), href: z.url() }).optional(), // shown when the row opens
+})
+
 const resume = defineCollection({
   // src/data/resume.yaml is one document; wrap it as a single entry "resume".
   loader: file("src/data/resume.yaml", {
@@ -93,18 +106,8 @@ const resume = defineCollection({
         gpa: z.string().optional(),
       }),
     ),
-    experience: z.array(
-      z.object({
-        company: z.string(),
-        role: z.string(),
-        start: month,
-        end: month.nullable(),
-        summary: z.string().optional(), // one line of context shown when the row opens
-        // Later terms in the same role (e.g. rehired the next year).
-        returned: z.array(z.object({ start: month, end: month.nullable() })).default([]),
-        bullets: z.array(z.string()),
-      }),
-    ),
+    experience: z.array(role),
+    community: z.array(role).default([]), // leadership, volunteering, freelance
     projects: z.array(reference("projects")), // described once, in the project's own file
     skills: z.record(z.string(), z.array(z.string())),
   }),

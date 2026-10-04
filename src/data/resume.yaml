@@ -74,6 +74,48 @@ experience:
       - Migrated 20+ legacy Salesforce Classic customizations (workflows, Process Builders, JavaScript buttons) to Lightning flows and components.
       - Earned the Salesforce AI Associate certification and Trailhead Ranger rank (100 badges).
 
+# Leadership, volunteering and freelance work: the home page's second list.
+community:
+  - company: Scout
+    role: Director of Media
+    start: 2024-01
+    end: null
+    summary: Northeastern's student-run design studio, pairing students with real clients. Promoted from videographer (2024) to project lead (2025) to director of media (2026).
+    bullets:
+      - Managing a 10-person media team across 4 client projects in animation, photography and videography.
+      - "Stepped in as project lead mid-project when the original lead left: inherited work two weeks behind schedule and a team that often left messages unanswered. Set clear expectations through one-on-one conversations, built backup timelines in case of delays, and delivered the project successfully."
+      - Created work for 5 clients, including bands, startups and alumni-founded ventures, from music videos and Kickstarter videos to product shoots and social content.
+      - Presented project updates and results to the studio's 100+ members.
+
+  - company: Northeastern Habitat for Humanity
+    role: Vice President
+    start: 2023-11
+    end: null
+    bullets:
+      - Northeastern's Habitat for Humanity student chapter. Rose from general member to co-director of service to vice president.
+      - Coordinated the chapter's service events and outreach to partner organizations.
+
+  - company: Srigmadeit
+    role: Freelance Videographer
+    start: 2020-07
+    end: 2023-05
+    summary: The photo and video business I started as a teenager.
+    bullets:
+      - Filmed NBA, college and high school athletes, with posted content earning 1.5M+ views.
+      - Filmed for hundreds of people at events and for community organizations, much of it volunteered.
+      - Sold 100+ pieces of branded merchandise and donated part of the profits to charities.
+    link: { label: "Watch the videos", href: "https://srigmadeit.com/videos" }
+
+  - company: Ekal Vidyalaya USA
+    role: Volunteer
+    start: 2015-08
+    end: null
+    summary: One of the world's largest grassroots education movements, running 96,000+ one-teacher schools in rural India and Nepal.
+    bullets:
+      - Raised $365+ at age 10 by organizing a "Change for a Change" fundraiser on my own.
+      - Helped run 3 app-a-thons that taught kids to build apps in Thunkable and raised thousands of dollars for rural schools, working one-on-one with kids who fell behind.
+      - Served as PR head of the Ekal Youth Leadership board, handling its graphic design.
+
 projects:
   - blind-draft
   - smartroomthing
