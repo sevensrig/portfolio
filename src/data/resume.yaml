@@ -74,6 +74,14 @@ experience:
       - Migrated 20+ legacy Salesforce Classic customizations (workflows, Process Builders, JavaScript buttons) to Lightning flows and components.
       - Earned the Salesforce AI Associate certification and Trailhead Ranger rank (100 badges).
 
+# Recommendations, quoted exactly as written (from LinkedIn).
+testimonials:
+  - quote: "Srig is a self-driven, bright, and technically-minded individual who I had the pleasure of working with during his co-op at SimpliSafe. He brought the skill and knowledge to contribute at the level of a full-time team member from day one, and consistently demonstrated excellent communication skills by breaking down complex problems/decisions clearly, both verbally and in his documentation. I wouldn't hesitate to have him on the team again!"
+    name: Jonathan Tseng
+    title: Software Engineering Manager, SimpliSafe
+    relationship: Managed Srig directly
+    date: July 2026
+
 # Leadership, volunteering and freelance work: the home page's second list.
 community:
   - company: Scout

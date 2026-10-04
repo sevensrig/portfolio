@@ -1,0 +1,54 @@
+---
+// Recommendations from people Srig has worked with, from resume.yaml. Each
+// quote sits in a speech bubble (the same white, 1px, sharp-cornered bubble
+// Hubert talks in) whose tail points at the person who said it.
+interface Props {
+  testimonials: { quote: string; name: string; title: string; relationship: string; date: string }[]
+}
+const { testimonials } = Astro.props
+const initials = (name: string) =>
+  name
+    .split(" ")
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+---
+
+{
+  testimonials.length > 0 && (
+    <section id="testimonials" class="pb-32">
+      <h2 class="font-mono text-xs uppercase tracking-widest text-base-content/50 mb-10">
+        {testimonials.length > 1 ? "Testimonials" : "Testimonial"}
+      </h2>
+      <div class="space-y-16">
+        {testimonials.map((t) => (
+          <figure class="max-w-3xl">
+            <blockquote class="bubble relative bg-white border border-base-content px-6 py-5 md:px-8 md:py-7 text-lg md:text-xl leading-relaxed tracking-[-0.01em]">
+              {t.quote}
+            </blockquote>
+            <figcaption class="mt-6 flex items-center gap-4">
+              <span class="grid size-11 shrink-0 place-items-center bg-neutral font-mono text-sm text-neutral-content" aria-hidden="true">
+                {initials(t.name)}
+              </span>
+              <span class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <span class="font-semibold">{t.name}</span>
+                <span class="text-base-content/70">{t.title}</span>
+                <span class="font-mono text-xs text-base-content/50">{t.relationship} · {t.date}</span>
+              </span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+<style>
+  /* Tail: a rotated square whose two bordered sides point down at the speaker. */
+  .bubble::after {
+    content: ""; position: absolute; left: 16px; bottom: -7px; width: 12px; height: 12px;
+    background: #fff;
+    border-right: 1px solid var(--color-base-content); border-bottom: 1px solid var(--color-base-content);
+    transform: rotate(45deg);
+  }
+</style>

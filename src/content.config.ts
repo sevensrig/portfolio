@@ -108,6 +108,17 @@ const resume = defineCollection({
     ),
     experience: z.array(role),
     community: z.array(role).default([]), // leadership, volunteering, freelance
+    testimonials: z
+      .array(
+        z.object({
+          quote: z.string(),
+          name: z.string(),
+          title: z.string(), // their role and company
+          relationship: z.string(), // e.g. "Managed Srig directly"
+          date: z.string(), // as written on LinkedIn
+        }),
+      )
+      .default([]),
     projects: z.array(reference("projects")), // described once, in the project's own file
     skills: z.record(z.string(), z.array(z.string())),
   }),
