@@ -17,10 +17,15 @@ const { github, linkedin } = Astro.props
     <p class="mt-10 mx-auto max-w-xl text-lg md:text-xl leading-relaxed text-base-content/70">
       CS at Northeastern, graduating May 2027. Previously at SimpliSafe, Fenwick &amp; West, and Northeastern ITS.
     </p>
-    <div class="mt-10 flex items-center justify-center gap-6 font-medium">
-      <a href="#work" class="btn btn-primary font-semibold">See the work</a>
-      <a href={github} class="hover:text-primary" target="_blank" rel="me noopener">GitHub ↗</a>
-      <a href={linkedin} class="hover:text-primary" target="_blank" rel="me noopener">LinkedIn ↗</a>
+    <div class="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-5 font-medium">
+      <div class="flex items-center gap-3">
+        <a href="#work" class="btn btn-primary font-semibold">See the work</a>
+        <a href="#experience" class="btn bg-white border-base-content font-semibold hover:bg-base-200">Experience</a>
+      </div>
+      <div class="flex items-center gap-6">
+        <a href={github} class="hover:text-primary" target="_blank" rel="me noopener">GitHub ↗</a>
+        <a href={linkedin} class="hover:text-primary" target="_blank" rel="me noopener">LinkedIn ↗</a>
+      </div>
     </div>
   </div>
 </section>
