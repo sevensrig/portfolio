@@ -24,12 +24,13 @@ experience:
     role: Business Innovation Intern
     start: 2026-06
     end: 2026-08
+    summary: Marketing Operations, building data pipelines and agentic AI systems.
     bullets:
-      - Built 9 AI automations by connecting 5 service APIs through LLM-driven orchestration.
-      - Cut the expense-reporting automation's run time by 50% (API parallelization, reusable schema references).
-      - Created test seeds and views across 10+ Databricks tables (20k+ rows each) for integration testing.
-      - Built a Python ETL pipeline over 3 data sources with custom scoring signals, surfacing $5M+ in cross-sell opportunities.
-      - Built an LLM email agent using multi-source RAG to write client-specific legal case summaries, with 2-minute response times.
+      - Built a signal-scoring engine that ranks clients by cross-sell urgency across 14+ signals from Salesforce, Lex Machina and ClinicalTrials.gov. A Writer agent turns plain-language requests into a JSON-schema config for the Python pipeline, and each run surfaces $5M+ in cross-sell opportunities.
+      - "Built a contract-intelligence pipeline from the iManage document system into Databricks: OAuth-authenticated ingestion, deterministic extraction of key contract terms, and LLM-written briefings from Databricks-hosted models."
+      - Cut latency by 50% on two automations by parallelizing API calls behind structured request and response schemas.
+      - Designed a normalized data model over 44 tables of PitchBook data, and built a referentially intact 1,000-company test dataset in Spark SQL.
+      - Built an event-driven email agent that returns case intelligence to attorneys in under 5 minutes.
 
   - company: Northeastern CAMD
     role: Website Designer (part-time)
@@ -47,12 +48,12 @@ experience:
     role: Software Engineer Co-op
     start: 2026-01
     end: 2026-06
+    summary: Frontend platform team for the US and UK e-commerce site (52K+ daily users), in a 134-project Nx monorepo.
     bullets:
-      - "Front-end platform team for the e-commerce site (52k visits a day). Stack: React, TypeScript, Vite, i18n, Chromatic, Tailwind, TanStack, AWS."
-      - "Completed the migration from Gatsby to React Router: CI/CD build times down 30%, 17,000+ lines of code removed."
-      - "Led the design-system work: 3 components and 100+ icons, built with designers."
-      - Maintained GitHub Actions CI/CD, build tooling, unit and E2E tests, and AWS infrastructure via Terraform across 4 repos.
-      - Won the company-wide AI hackathon (the Zoom → Jira agent).
+      - "Led the Gatsby to React Router migration with a move from Webpack to Vite: CI/CD builds 30% faster, 81 GraphQL queries and 40 dependencies removed."
+      - "Led a shared React component library with designers and a co-developer: a versioned, strict-TypeScript package (5 components, 241 icons) adopted across 4 teams. Switching icons to direct imports cut the button's icon payload by about 99%."
+      - Maintained 20 GitHub Actions workflows (11 parallel jobs per PR) and expanded E2E coverage to 68 Playwright tests across 14 device and market combinations, protecting 14 checkout flows.
+      - Won the company-wide AI hackathon with SimpliSync, a Zoom-to-Jira agent.
 
   - company: Scalable Design Participation Lab
     role: Research Assistant
@@ -60,16 +61,18 @@ experience:
     end: null
     bullets:
       - Designing and building full-stack user management and auth with Firebase Identity and Access Management.
-      - 15+ reusable Vue/TypeScript components and composables in Nuxt.
+      - Built 15+ reusable Vue/TypeScript components and composables in Nuxt.
 
   - company: Northeastern ITS
     role: Salesforce Developer Co-op
     start: 2025-01
     end: 2025-06
+    summary: Salesforce development for apps serving 47,000+ students.
     bullets:
-      - Owned full-stack Lightning Web Component features for faculty appointment and student-request apps serving 47,000+ students.
-      - Cleared 300+ items of database debt, including fields referenced by over 1M records.
-      - Migrated 20+ legacy Salesforce Classic customizations to Lightning flows and components.
+      - Rebuilt student-facing request apps, including the leave-of-absence form, as Lightning Web Components.
+      - Built a dependency analysis across objects, classes and fields that cleared 300+ items of technical debt, including fields used on 1M+ records.
+      - Migrated 20+ legacy Salesforce Classic customizations (workflows, Process Builders, JavaScript buttons) to Lightning flows and components.
+      - Earned the Salesforce AI Associate certification and Trailhead Ranger rank (100 badges).
 
 projects:
   - blind-draft
