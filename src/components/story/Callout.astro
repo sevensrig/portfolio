@@ -9,7 +9,7 @@ const labels = { broke: "What broke", lesson: "Lesson", note: "Note" }
 const { type = "note", title } = Astro.props
 ---
 
-<aside class:list={["callout not-prose my-10 border p-6", type === "broke" ? "border-base-content" : "border-base-content/20"]}>
+<aside class:list={["callout not-prose my-10 border p-6", type === "broke" ? "border-base-content bg-white" : "border-base-content/20"]}>
   <p class="font-mono text-xs uppercase tracking-widest text-base-content/50">
     {labels[type]}{title && <span class="text-base-content"> · {title}</span>}
   </p>
