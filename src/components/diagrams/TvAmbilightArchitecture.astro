@@ -2,7 +2,7 @@
 // TV Ambilight: the Mac mirrors to the TV, captures its own screen, and
 // drives three lights over their local UDP protocols.
 const steps = [
-  { name: "Capture the screen", note: "mss · ~20 ms · shrink to ~190 px wide" },
+  { name: "Capture the screen", note: "mss · ~19 ms · shrink to ~190 px wide" },
   { name: "Crop black bars", note: "letterbox and pillarbox" },
   { name: "Dominant color × 3 regions", note: "24-bin hue histogram, not an average" },
   { name: "Smooth", note: "moving average · snaps on scene cuts" },
@@ -38,7 +38,7 @@ const lights = [
   <!-- Mac pipeline -->
   <rect class="dg-box" x="250" y="20" width="420" height="340" />
   <text class="dg-kicker" x="270" y="46">MAC · PYTHON</text>
-  <text class="dg-title" x="270" y="74">ambilight.py · 12 fps</text>
+  <text class="dg-title" x="270" y="74">ambilight.py · 5 updates/s</text>
   {steps.map((s, i) => (
     <>
       <rect class="dg-inner" x="270" y={top + i * gap} width="380" height="52" />

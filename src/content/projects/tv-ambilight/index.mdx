@@ -1,7 +1,7 @@
 ---
 title: TV Ambilight
 tagline: Room lights that follow what's on the TV
-summary: A Python tool that watches a Mac's mirrored screen and drives three room lights, two LIFX bulbs and a Govee light, to match it, 12 times a second, over each brand's local network protocol, with no cloud involved.
+summary: A Python tool that watches a Mac's mirrored screen and drives three room lights, two LIFX bulbs and a Govee light, to match it, 5 times a second, over each brand's local network protocol, with no cloud involved.
 status: shipped
 period: { start: 2026-09, end: 2026-09 }
 role: Solo
@@ -13,7 +13,7 @@ links:
 tldr:
   problem: TVs with Philips-style ambient lighting, or a dedicated capture box, cost extra. The smart lights already in my room had no idea what was on screen.
   built: A Python tool that grabs the Mac's mirrored display, finds each screen region's dominant color with a hue histogram, smooths it, and sends it straight to two LIFX bulbs and a Govee light over their local UDP protocols.
-  outcome: It runs at 12 frames a second with no cloud or accounts. The lights fade smoothly, snap on scene cuts, and go back to how they were when you quit.
+  outcome: A super immersive way to watch. The room's lights change with the picture at 5 updates a second, responding instantly over local network packets with no cloud or accounts. They fade smoothly, snap on scene cuts, and go back to how they were when you quit.
 media:
   hero: ./room-poster.jpg
   loop: { src: "r2:tv-ambilight/room", poster: ./room-poster.jpg }
@@ -33,7 +33,7 @@ Mirror the Mac to the TV over AirPlay or HDMI, then run `ambilight.py run`. Thre
 
 - **A LIFX bulb** follows the top-left of the screen.
 - **A second LIFX bulb** follows the bottom-left.
-- **A Govee light** follows the right side.
+- **A Govee light** follows the right quarter.
 
 `discover` finds the lights on the network, and `setup` flashes each bulb red in turn and asks which one is which. Ctrl-C stops it and restores every light's original state.
 
@@ -41,21 +41,27 @@ Mirror the Mac to the TV over AirPlay or HDMI, then run `ambilight.py run`. Thre
 
 ## How it works
 
-Every frame, about 12 times a second:
+Every update, 5 times a second:
 
-1. **Capture** the main display with `mss` (about 20 ms per grab), then shrink it to roughly 190 pixels wide. That's plenty for picking colors and keeps the math cheap.
+1. **Capture** the main display with `mss` (18.6 ms per grab, averaged over 10 frames), then shrink it to roughly 190 pixels wide. That's plenty for picking colors and keeps the math cheap.
 2. **Crop black bars,** so letterboxed movies don't push the regions off the actual picture.
 3. **Pick each region's dominant color** (more below).
 4. **Smooth it** with an exponential moving average so the lights don't flicker, unless the color jumps by a lot. Then it's a scene cut, and the light snaps most of the way at once.
 5. **Send it** straight to the lights over UDP: a hand-built binary packet for LIFX, with a fade time so the bulb blends between frames itself, and a small JSON message for Govee.
 
-<Diagram caption="The whole loop runs on the Mac, 12 times a second. Nothing leaves the local network.">
+<Diagram caption="The whole loop runs on the Mac, 5 times a second. Nothing leaves the local network.">
   <Architecture />
 </Diagram>
 
 I talk to the lights directly over the local network instead of through either brand's cloud API. That means no accounts, no internet dependency, and much lower latency. The LIFX client is about 100 lines of `struct` packing written against the published LAN protocol, rather than a library.
 
 I chose to capture the Mac's screen instead of buying an HDMI capture card. The trade-off: the menu bar and Dock count as part of the picture.
+
+A few other choices:
+
+- **One color on the Govee light, not a top-to-bottom gradient.** Setting each segment separately needs an unofficial command; a single color uses the documented one, which I trust to keep working.
+- **5 updates a second, set by the hardware.** I started at 12, but the Govee light can only process about 5 commands a second (see What broke). Anything faster just queues up and makes the light lag. 5 is that hardware ceiling, and running every light at the same rate keeps them in step. The bulbs' fades and the smoothing fill the gaps between updates, so it still looks fluid.
+- **The bulbs fade themselves.** Each LIFX command carries a fade time of 1.5× the update interval, so the bulb blends between frames instead of stepping.
 
 ## Picking the right color
 
@@ -68,19 +74,19 @@ Averaging a region's pixels gives mud: a red scene with some blue in it averages
 ## What broke
 
 <Callout type="broke" title="The Govee light fell behind the picture">
-  The Govee light lagged further and further behind the screen. I had been sending a new color whenever it changed, but the light queues commands on the network and works through them one at a time, so a fast scene built up a backlog. The fix was to send at most 5 updates a second, and only when the color or brightness changes by a noticeable amount. The device's speed sets the limit, not my frame rate.
+  The Govee light lagged further and further behind the screen. I was sending it about 12 commands a second, and unlike the LIFX bulbs it has no built-in fade, so it most likely queued them and worked through a growing backlog. That's a hardware limit: the light only works through about 5 commands a second, so the fix was to cap updates at 5 a second and skip any that wouldn't change the color or brightness noticeably. The device's speed sets the rate, not my code.
 </Callout>
 
 <Callout type="broke" title="Washed-out colors in dark scenes">
-  On the Govee light, dark scenes came out as weak, pale colors. I was encoding brightness into the RGB values, so a dim red became something like (20, 3, 2), and the LEDs can't render that faithfully. Screen colors are also gamma-encoded while LED channels are linear. Now the tool sends the hue at full strength with 2.2 gamma correction, and sends brightness as its own command.
+  The bulbs looked right, but the Govee light came out mostly white. Comparing its code path with the bulbs' turned up three causes. Its screen region was about twice the size of each bulb's, so more colors got blended. Screen colors are gamma-encoded for human eyes while LED channels are linear, so an orange went out as (153, 84, 38) when it should have been (255, 68, 12). And I was encoding brightness by shrinking the RGB values, which the LEDs can't render faithfully. Now its region is the right quarter of the screen instead of the right 35%, colors get 2.2 gamma correction, and brightness goes out as its own command.
 </Callout>
 
 <Callout type="broke" title="Saved settings froze old defaults">
-  The config file saved every setting, including the ones I'd never changed, so when I tuned a default in code, existing setups never got it. Now it only saves values that differ from the defaults.
+  The config file saved every setting, including the ones I'd never changed. I caught it while making the fix above: the new, narrower Govee region would have been silently overridden by the old value saved on disk. Now it only saves the device details and values that differ from the defaults.
 </Callout>
 
-A smaller one: without macOS's Screen Recording permission, captured frames come back black and the lights sit at their minimum brightness. The README calls this out. There's also a brightness floor so the lights never go fully dark on black frames.
+Smaller ones: grey areas of the screen came out olive, because the "mostly grey" fallback averaged in the few colorful pixels too and the saturation boost exaggerated that tint, so now it averages only the neutral ones. Discovery also found no LIFX bulbs at all. I ruled out the network step by step before realizing the bulbs were switched off. And without macOS's Screen Recording permission, captured frames come back black and the lights sit at their minimum brightness. The README calls this out. There's also a brightness floor so the lights never go fully dark on black frames.
 
 ## What I'd do next
 
-I haven't measured end-to-end latency (screen to light) yet, and that's the number that matters most for how it feels. I'd also like to split the screen into more regions, with a light for each.
+The Govee fixes have only been checked against a simulated light so far, where updates came at most every 246 ms, so the next step is a proper run on the real one. I also haven't measured end-to-end latency (screen to light), and that's the number that matters most for how it feels. After that: automated tests, starting with the synthetic-frame check I used during development, and more screen regions with a light for each.
