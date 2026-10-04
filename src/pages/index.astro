@@ -19,6 +19,6 @@ const { contact, experience, community, testimonials } = (await getEntry("resume
     </RoleList>
     <Testimonials testimonials={testimonials} />
     <RoleList id="community" title="Leadership and community" roles={community} />
-    <Contact email={contact.email} />
+    <Contact email={contact.email} name={contact.name} />
   </main>
 </Base>
