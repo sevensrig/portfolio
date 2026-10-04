@@ -9,7 +9,7 @@ export async function getStaticPaths() {
   const projects = await getCollection("projects")
   const home: OgContent = {
     kicker: "Software engineer · Northeastern '27",
-    title: "Shipping web apps, AI agents and the occasional Raspberry Pi hack",
+    title: "Shipping web apps, AI agents, and the occasional Raspberry Pi hack",
     footer: "Projects · Experience · Résumé",
   }
   return [
