@@ -4,7 +4,7 @@
 
 <svg class="dg" viewBox="0 0 960 320" role="img" aria-labelledby="ss-title ss-desc">
   <title id="ss-title">SimpliSync architecture</title>
-  <desc id="ss-desc">A user pastes a Zoom transcript into a Next.js app. Its parse route sends the transcript to a locally running LLM through Ollama, which returns structured ticket updates. Those updates feed the post route: after the user reviews and approves them, it posts comments, issue links and subtasks to Jira Cloud.</desc>
+  <desc id="ss-desc">A user pastes a Zoom transcript into a Next.js app. Its parse route sends the transcript to Gemma 4, running locally through Ollama, which returns structured ticket updates. Those updates feed the post route: after the user reviews and approves them, it posts comments, issue links and subtasks to Jira Cloud.</desc>
   <defs>
     <marker id="ss-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
       <path d="M0 0 L10 5 L0 10 z" fill="var(--color-base-content)" />
@@ -41,7 +41,7 @@
 
   <rect class="dg-box" x="740" y="56" width="200" height="88" />
   <text class="dg-kicker" x="756" y="80">OLLAMA · ON THE LAPTOP</text>
-  <text class="dg-name" x="756" y="104">Local LLM</text>
+  <text class="dg-name" x="756" y="104">Gemma 4 (local LLM)</text>
   <text class="dg-note" x="756" y="124">transcript never leaves</text>
 
   <!-- LLM output comes back around to the post route -->

@@ -1,0 +1,63 @@
+---
+title: Legal AI
+tagline: Agents and data pipelines for a law firm
+summary: At Fenwick & West, I built AI agents and the data systems under them. A cross-sell scoring engine ranks clients from live CRM, funding, litigation and clinical-trial data, a contract pipeline turns documents into query-ready tables, and an email agent briefs attorneys on new cases.
+status: shipped
+period: { start: 2026-06, end: 2026-08 }
+role: Business Innovation Intern · Fenwick & West
+stack: [Python, Spark SQL, Databricks, Writer agents, Salesforce API, iManage API, Lex Machina, JSON Schema]
+categories: [ai, backend]
+order: 2
+media:
+  hero: ./cover.png
+tldr:
+  problem: The firm's client data was spread across a CRM, third-party funding and litigation databases, and a document system. Answering "which clients should we talk to now?" or "what's in this contract?" meant hours of manual digging.
+  built: Agentic AI systems where the agent is one part of an engineered pipeline. Language models handle plain-language requests and write summaries; parallelized API calls, JSON schemas and normalized data models do the rest.
+  outcome: Each run of the scoring engine surfaces $5M+ in cross-sell opportunities, two existing automations got 50% faster, and attorneys get case briefings in under 5 minutes.
+---
+
+import Architecture from "../../../components/diagrams/LegalAiArchitecture.astro"
+
+{/* From Srig's internship summary. No screenshots: the tools and data are internal. */}
+
+I spent the summer on the Marketing Operations team treating each AI project as an engineering problem first. Prompting a model was the easy part. The value came from what I built around it: rate limits and access control, parallel API calls, schemas for structured input and output, and version control throughout.
+
+## The signal-scoring engine
+
+Partners want to know which existing clients are about to need more legal work. I took a hardcoded Python script written for one practice area, Life Sciences, and turned it into a configurable pipeline that works for any of them.
+
+<Diagram caption="Dashed: live external data. The agent only writes the config; the scoring is plain, deterministic Python.">
+  <Architecture />
+</Diagram>
+
+- **The agent writes a config, not an answer.** A Writer agent turns a request like "rank our AI clients by cross-sell urgency" into a JSON-schema scoring configuration. The Python pipeline validates that config and does the scoring, so results are repeatable and explainable instead of whatever the model says that day.
+- **14+ signals.** Funding stage (with separate signals for Series A through D+, to catch companies at peak timing), valuation, priority investors, relationship strength, gaps in the services a client already uses, active litigation and clinical-trial phase. Default weights shift based on what the user asks for.
+- **Parallel calls.** The CRM and third-party APIs are called concurrently, and the output is an Excel report ranked into three tiers: Priority, Act Now and Watch.
+
+I validated it with a live production run on real clients, then packaged it as a Writer skill with documentation and a configuration guide so other teams could run it.
+
+<Callout type="broke" title="Real data doesn't match the docs">
+  The pipeline's hardest problems were in the data, not the AI. Some PitchBook fields can't be filtered through the API, so they're filtered after fetching. The CRM uses a single "Business" record type for every company, so record types couldn't tell clients apart. Companies often have compound industry labels, like two verticals joined together, so exact matches missed them and I switched to substring matching. And litigation searches by party name returned unrelated companies with similar names, so I added noise filtering on the results.
+</Callout>
+
+## Contract intelligence pipeline
+
+A pipeline from the firm's document management system, iManage, into Databricks. It pulls contracts, extracts their key terms and writes a briefing for each, and lands everything as tables people can query. I adapted a standalone parsing script into something that runs top to bottom on a fresh Databricks cluster with no manual setup.
+
+- **Rules first, then the model.** Reliable fields (document ID, client, matter) come straight from iManage metadata. Deterministic code pulls contract type, counterparty, effective date, auto-renewal and notice windows from the text. It also builds a pricing model that tells flat, escalating, per-seat and per-hour pricing apart, and ignores dollar figures that aren't prices, like liability caps. Only then does a Claude model, hosted on Databricks, write a briefing: a summary, key terms and obligations, and critical dates.
+- **Real documents.** It parses DOCX and PDF files in memory, keeps tables that plain text extraction would flatten, and tells signed contracts apart from unsigned templates.
+- **No secrets in code.** Credentials live in Databricks secret scopes, and API tokens are cached between calls.
+
+A live run on real signed agreements (SaaS, master service and enterprise vendor contracts) correctly picked out counterparties, contract values and renewal-notice deadlines.
+
+<Callout type="broke" title="Authentication failed for no visible reason">
+  Calls to iManage kept being rejected, and the error didn't say why. I worked through the request piece by piece and found a credential-encoding bug that was silently corrupting the login. Once the credentials were encoded correctly, everything else worked.
+</Callout>
+
+## Smaller systems
+
+- **Case briefings by email.** An attorney forwards a complaint to the library team's inbox. A Writer agent picks up the email, pulls the case from CasePortal, adds litigation data from Lex Machina, and replies with the key case intelligence in under 5 minutes.
+- **50% faster automations.** I cut end-to-end time in half on a receipt-analyzer workflow (ClickUp to Outlook) and a company-profile PDF generator, by running independent API calls in parallel and using structured schemas to order the ones that depend on each other.
+- **A data model for PitchBook.** A normalized entity-relationship model over 44 tables of PitchBook data, with the keys defined so enriched data can flow back into Databricks. For testing, I built a 1,000-company sample across 20 related tables in Spark SQL, with no orphaned rows, deduplicated to one row per company.
+- **Similar-client search.** It finds past clients that look like a new prospect by joining PitchBook, Salesforce and Litera Foundation data and scoring shared attributes with a rule-based Python model.
+- **Agent tools.** I made the Marketo API callable by a Writer agent, for creating alerts and editing email templates, and helped test and finish a skill for asking the PitchBook data questions in plain language.

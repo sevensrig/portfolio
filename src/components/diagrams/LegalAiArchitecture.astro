@@ -1,0 +1,62 @@
+---
+// Legal AI: the cross-sell signal-scoring engine. A Writer agent compiles a
+// plain-language request into a JSON-schema config; a Python pipeline calls
+// the data sources in parallel, scores 14+ signals and writes a tiered report.
+const sources = [
+  { kicker: "CRM", name: "Salesforce" },
+  { kicker: "FUNDING", name: "PitchBook" },
+  { kicker: "LITIGATION", name: "Lex Machina" },
+  { kicker: "TRIALS", name: "ClinicalTrials.gov" },
+]
+const sx = (i: number) => 179 + i * 174
+---
+
+<svg class="dg" viewBox="0 0 960 330" role="img" aria-labelledby="la-title la-desc">
+  <title id="la-title">Signal-scoring engine architecture</title>
+  <desc id="la-desc">A user asks in plain language. A Writer agent compiles the request into a JSON-schema scoring configuration. A Python pipeline reads that configuration, calls Salesforce, PitchBook, Lex Machina and ClinicalTrials.gov in parallel, scores each client on 14 or more weighted signals, and writes a tier-ranked Excel report.</desc>
+  <defs>
+    <marker id="la-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="var(--color-base-content)" />
+    </marker>
+  </defs>
+
+  <rect class="dg-box" x="20" y="40" width="150" height="90" />
+  <text class="dg-kicker" x="36" y="64">USER</text>
+  <text class="dg-name" x="36" y="88">Asks a question</text>
+  <text class="dg-note" x="36" y="110">in plain language</text>
+
+  <line class="dg-line" x1="170" y1="85" x2="198" y2="85" marker-end="url(#la-arrow)" />
+  <circle class="dg-dot" cx="170" cy="85" r="3.5" />
+  <rect class="dg-box" x="200" y="40" width="180" height="90" />
+  <text class="dg-kicker" x="216" y="64">WRITER AGENT</text>
+  <text class="dg-name" x="216" y="88">Compiles a config</text>
+  <text class="dg-note" x="216" y="110">signals and weights</text>
+
+  <line class="dg-line" x1="380" y1="85" x2="408" y2="85" marker-end="url(#la-arrow)" />
+  <circle class="dg-dot" cx="380" cy="85" r="3.5" />
+  <text class="dg-edge" x="394" y="30" text-anchor="middle">JSON SCHEMA</text>
+  <rect class="dg-box" x="410" y="40" width="220" height="90" />
+  <text class="dg-kicker" x="426" y="64">PYTHON PIPELINE</text>
+  <text class="dg-name" x="426" y="88">Score every client</text>
+  <text class="dg-note" x="426" y="110">14+ weighted signals</text>
+
+  <line class="dg-line" x1="630" y1="85" x2="658" y2="85" marker-end="url(#la-arrow)" />
+  <circle class="dg-dot" cx="630" cy="85" r="3.5" />
+  <rect class="dg-box" x="660" y="40" width="280" height="90" />
+  <text class="dg-kicker" x="676" y="64">EXCEL REPORT</text>
+  <text class="dg-name" x="676" y="88">Clients ranked by tier</text>
+  <text class="dg-note" x="676" y="110">T1 Priority · T2 Act Now · T3 Watch</text>
+
+  <!-- Parallel calls out to the data sources -->
+  <line class="dg-line" x1="520" y1="178" x2="520" y2="132" marker-end="url(#la-arrow)" />
+  <text class="dg-edge" x="530" y="160">PARALLEL CALLS</text>
+  <path class="dg-line" d={`M${sx(0) + 80} 220 V178 H${sx(3) + 80} V220`} />
+  {sources.slice(1, 3).map((_, i) => <line class="dg-line" x1={sx(i + 1) + 80} y1="178" x2={sx(i + 1) + 80} y2="220" />)}
+  {sources.map((s, i) => (
+    <>
+      <rect class="dg-cloud" x={sx(i)} y="220" width="160" height="76" />
+      <text class="dg-kicker" x={sx(i) + 16} y="244">{s.kicker}</text>
+      <text class="dg-name" x={sx(i) + 16} y="268">{s.name}</text>
+    </>
+  ))}
+</svg>

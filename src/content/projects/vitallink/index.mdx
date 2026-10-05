@@ -7,7 +7,7 @@ period: { start: 2025-10, end: 2026-03 }
 role: Team of 3 · system design and pitch
 stack: [Edge computing, Federated learning, Private 5G, Verizon ThingSpace]
 categories: [ai]
-order: 6
+order: 7
 tldr:
   problem: Hospital vitals are checked every 30–45 minutes, and nurses doing rounds every 4 hours miss 90% of hypoxemic events (Rowland et al., JMIR 2025). Shared Wi-Fi congests, staff are stretched thin, and centralizing patient data adds HIPAA risk.
   built: A production-intent architecture and business case. A mini-PC "Health Twin" in each ward runs anomaly detection and short-term forecasting on the vitals from existing bedside monitors and alerts nurses locally. Wards share only model updates, and critical traffic gets its own private 5G slice.

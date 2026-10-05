@@ -5,12 +5,12 @@ summary: Won SimpliSafe's company-wide AI hackathon. A local AI agent reads a Zo
 status: shipped
 period: { start: 2026-04, end: 2026-04 }
 role: Team of 3 · AI hackathon
-stack: [TypeScript, Next.js, React, Tailwind, Ollama, Jira Cloud REST API]
+stack: [TypeScript, Next.js, React, Tailwind, Gemma 4, Ollama, Jira Cloud REST API]
 categories: [ai, fullstack]
-order: 5
+order: 6
 tldr:
   problem: After a standup, someone has to remember every action item and blocker and type them into Jira. Updates lag behind the meeting, and dependency links get forgotten.
-  built: A Next.js app where you paste a Zoom transcript. A locally run LLM turns it into structured updates for the tickets mentioned, you swipe to accept or reject each one, and the approved ones post to Jira as comments, subtasks and issue links.
+  built: A Next.js app where you paste a Zoom transcript. Gemma 4, running locally, turns it into structured updates for the tickets mentioned, you swipe to accept or reject each one, and the approved ones post to Jira as comments, subtasks and issue links.
   outcome: Won SimpliSafe's company-wide AI hackathon.
 media:
   hero: ./demo-poster.jpg
@@ -38,5 +38,5 @@ The demo above runs on a sandbox Jira project with made-up tickets.
 
 Two choices shaped it:
 
-- **A locally run model.** Meeting transcripts are internal, so the LLM runs on the laptop through Ollama instead of a hosted API, and the transcript never leaves the machine.
+- **A locally run model.** Meeting transcripts are internal, so the LLM, Google's open Gemma 4 model, runs on the laptop through Ollama instead of a hosted API, and the transcript never leaves the machine.
 - **A person approves every write.** The agent proposes and a human confirms, ticket by ticket, before anything touches Jira. A wrong blocker link or a stray subtask costs more trust than the time it saves.
