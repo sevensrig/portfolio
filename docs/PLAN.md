@@ -125,7 +125,7 @@ media:
 - **SimpliSafe, Software Engineer Co-op (Jan–Jun 2026)**
   - Front-end platform team for the e-commerce site (52k visits a day). Stack: React, TypeScript, Vite, i18n, Chromatic, Tailwind, TanStack, AWS.
   - Completed the migration from Gatsby to React Router: CI/CD build times down 30%, 17,000+ lines of code removed.
-  - Led the design-system work: 3 components and 100+ icons, built with designers.
+  - Led the design-system work: 3 components and 240+ icons, built with designers.
   - Maintained GitHub Actions CI/CD, build tooling, unit and E2E tests, and AWS infrastructure via Terraform across 4 repos.
   - Won the company-wide AI hackathon (the Zoom → Jira agent).
 - **Northeastern ITS, Salesforce Developer Co-op (Jan–Jun 2025)**
