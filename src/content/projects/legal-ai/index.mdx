@@ -17,6 +17,7 @@ tldr:
 ---
 
 import Architecture from "../../../components/diagrams/LegalAiArchitecture.astro"
+import ContractPipeline from "../../../components/diagrams/ContractPipelineArchitecture.astro"
 
 {/* From Srig's internship summary. No screenshots: the tools and data are internal. */}
 
@@ -43,6 +44,10 @@ I validated it with a live production run on real clients, then packaged it as a
 ## Contract intelligence pipeline
 
 A pipeline from the firm's document management system, iManage, into Databricks. It pulls contracts, extracts their key terms and writes a briefing for each, and lands everything as tables people can query. I adapted a standalone parsing script into something that runs top to bottom on a fresh Databricks cluster with no manual setup.
+
+<Diagram caption="Dashed: the firm's document system. Rules pull the facts; the model only writes the briefing.">
+  <ContractPipeline />
+</Diagram>
 
 - **Rules first, then the model.** Reliable fields (document ID, client, matter) come straight from iManage metadata. Deterministic code pulls contract type, counterparty, effective date, auto-renewal and notice windows from the text. It also builds a pricing model that tells flat, escalating, per-seat and per-hour pricing apart, and ignores dollar figures that aren't prices, like liability caps. Only then does a Claude model, hosted on Databricks, write a briefing: a summary, key terms and obligations, and critical dates.
 - **Real documents.** It parses DOCX and PDF files in memory, keeps tables that plain text extraction would flatten, and tells signed contracts apart from unsigned templates.
