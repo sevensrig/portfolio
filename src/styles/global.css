@@ -72,3 +72,14 @@
   .dg .dg-line { stroke: var(--color-base-content); stroke-width: 1.25; fill: none; }
   .dg .dg-dot { fill: var(--color-primary); }
 }
+
+/* Page transitions: moving between the home page and a project, the project's
+   picture and title glide into place (the shared names are set in
+   ProjectCard.astro and the project page). Browsers without cross-page view
+   transitions just navigate normally. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+}
+::view-transition-group(*) { animation-duration: .45s; animation-timing-function: cubic-bezier(.2, .7, .2, 1); }
+/* Card pictures are 4:3 and the project header is 16:9: crop instead of stretching. */
+::view-transition-old(.project-media), ::view-transition-new(.project-media) { height: 100%; object-fit: cover; }

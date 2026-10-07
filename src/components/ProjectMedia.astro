@@ -10,12 +10,17 @@ interface Props {
   /** CSS object-position for the crop, e.g. "center 75%". */
   position?: string
   class?: string
+  /** Shared name for the page transition between a card and its project page. */
+  transitionName?: string
 }
-const { src, alt, aspect, position, class: className } = Astro.props
+const { src, alt, aspect, position, class: className, transitionName } = Astro.props
 const ratio = aspect === "wide" ? "aspect-[16/9]" : "aspect-[4/3]"
 ---
 
-<div class:list={["project-media overflow-hidden border border-base-content/20", ratio, className]}>
+<div
+  class:list={["project-media overflow-hidden border border-base-content/20", ratio, className]}
+  style={transitionName ? `view-transition-name: ${transitionName}; view-transition-class: project-media` : undefined}
+>
   {
     src ? (
       <Image src={src} alt={alt} class="size-full object-cover" style={position ? `object-position: ${position}` : undefined} widths={[640, 960, 1280, 1920]} sizes="(min-width: 1152px) 1152px, 100vw" />

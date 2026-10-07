@@ -4,7 +4,8 @@
 import { Image } from "astro:assets"
 import headshot from "../assets/headshot.jpg"
 import Icon from "./Icon.astro"
-import { faEnvelope } from "@fortawesome/free-regular-svg-icons"
+import { faCopy, faEnvelope } from "@fortawesome/free-regular-svg-icons"
+import { faCheck } from "@fortawesome/free-solid-svg-icons"
 
 interface Props {
   email: string
@@ -23,6 +24,36 @@ const { email, name } = Astro.props
   />
   <div>
     <h2 class="font-semibold tracking-[-0.04em] leading-[0.95] text-[clamp(2.4rem,6vw,5rem)]">Contact me<span class="text-primary">.</span></h2>
-    <a href={`mailto:${email}`} class="mt-6 inline-flex items-center gap-3 text-xl md:text-2xl font-medium hover:text-primary"><Icon icon={faEnvelope} class="text-[0.8em]" /><span class="underline decoration-primary decoration-2 underline-offset-[6px]">{email}</span></a>
+    <div class="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
+      <a href={`mailto:${email}`} class="inline-flex items-center gap-3 text-xl md:text-2xl font-medium hover:text-primary"><Icon icon={faEnvelope} class="text-[0.8em]" /><span class="underline decoration-primary decoration-2 underline-offset-[6px]">{email}</span></a>
+      <button type="button" class="copy-email inline-flex items-center gap-2 border border-base-content/25 bg-white px-2.5 py-1.5 font-mono text-xs uppercase tracking-widest hover:border-base-content" data-email={email}>
+        <span class="copy-idle inline-flex items-center gap-2"><Icon icon={faCopy} />Copy</span>
+        <span class="copy-done hidden items-center gap-2 text-primary"><Icon icon={faCheck} />Copied</span>
+      </button>
+      <span class="sr-only" aria-live="polite" data-copy-status></span>
+    </div>
   </div>
 </section>
+
+<script>
+  // Copy the address: many recruiters don't use the mail app a mailto link opens.
+  const button = document.querySelector<HTMLButtonElement>(".copy-email")
+  const status = document.querySelector<HTMLElement>("[data-copy-status]")
+  let timer = 0
+  button?.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(button.dataset.email!)
+    } catch {
+      return // clipboard blocked: the mailto link still works
+    }
+    button.querySelector(".copy-idle")!.classList.replace("inline-flex", "hidden")
+    button.querySelector(".copy-done")!.classList.replace("hidden", "inline-flex")
+    if (status) status.textContent = "Email address copied"
+    clearTimeout(timer)
+    timer = window.setTimeout(() => {
+      button.querySelector(".copy-done")!.classList.replace("inline-flex", "hidden")
+      button.querySelector(".copy-idle")!.classList.replace("hidden", "inline-flex")
+      if (status) status.textContent = ""
+    }, 1800)
+  })
+</script>

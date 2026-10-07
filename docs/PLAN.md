@@ -157,6 +157,10 @@ Section order (2026-10-06): Hero → Experience (with the résumé link) → Sel
 - `src/content/projects/<slug>/index.mdx`: one folder per project. Frontmatter adds `summary` (home page blurb) and `categories` to the draft model above. `media.hero` is optional until photos exist; cards show a grey placeholder without it.
 - `src/data/resume.yaml`: contact, education, experience, project slugs and skills.
 - `src/components/Icon.astro`: Font Awesome icons (free solid, regular and brand packages) inlined as SVG at build time, sized and coloured by the text around them. Used sparingly (2026-10-06): GitHub and LinkedIn in the hero, a file icon on the Résumé button and link, globe and GitHub icons on project links, an envelope on the contact email, a bug on "What broke" callouts, and one per Hubert menu option.
+- Motion added 2026-10-06 (all off under reduced motion):
+  - Page transitions: native cross-document view transitions (`@view-transition` in global.css, no JS). Cards and project pages share `view-transition-name`s (`media-<slug>` on the picture via `ProjectMedia`/`Video` `transitionName`, `title-<slug>` on the title), so the picture and title glide between pages. Browsers without support navigate normally.
+  - Self-drawing diagrams (draw-in plus orange packets on the arrows) were tried and rejected by the owner; diagrams stay static.
+  - Contact: a boxed "Copy" button next to the email copies the address and shows "Copied" for ~2 s.
 - SEO (2026-10-06): `@astrojs/sitemap` writes `/sitemap-index.xml` (404 left out), `public/robots.txt` points to it, and the home page carries ProfilePage/Person JSON-LD via the `schema` prop on `Base.astro`. The owner still needs to verify srig.tech in Google Search Console and submit the sitemap.
 - `src/layouts/Base.astro`: the page shell (head, header, footer, Hubert).
 - `src/components/`: `Hero`, `ShaderBackground`, `WorkSection`, `ProjectCard`, `ProjectMedia`, `RoleList` (Experience and Leadership and community), `Contact`, `Hubert`, `Header`, `Footer`.
