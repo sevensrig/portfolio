@@ -14,6 +14,8 @@ interface Props {
   hubert?: boolean
   /** Social preview image: "home" or a project slug (see src/pages/og). */
   og?: string
+  /** Structured data (JSON-LD) that tells search engines what the page is about. */
+  schema?: Record<string, unknown>
 }
 
 const resume = (await getEntry("resume", "resume"))!.data
@@ -23,6 +25,7 @@ const {
   description = `${name} — software engineer graduating May 2027. Projects, experience and résumé.`,
   hubert = true,
   og = "home",
+  schema,
 } = Astro.props
 const fullTitle = title ? `${title} · ${name}` : name
 const canonical = new URL(Astro.url.pathname, Astro.site)
@@ -32,6 +35,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
 <html lang="en" data-theme="creme">
   <head>
     <meta charset="utf-8" />
+    <!-- Icons: Font Awesome Free by Fonticons, Inc. (https://fontawesome.com), licensed CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). -->
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
@@ -47,6 +51,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content={fullTitle} />
     <meta name="twitter:card" content="summary_large_image" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
   </head>
   <body class="bg-base-100 text-base-content font-display antialiased">
     <Header name={name} />

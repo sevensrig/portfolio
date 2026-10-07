@@ -1,4 +1,6 @@
 ---
+import Icon from "./Icon.astro"
+import { faGithub, faLinkedin } from "@fortawesome/free-brands-svg-icons"
 import ShaderBackground from "./ShaderBackground.astro"
 
 interface Props {
@@ -23,8 +25,8 @@ const { github, linkedin } = Astro.props
         <a href="#experience" class="btn bg-white border-transparent font-semibold hover:bg-base-200">Experience</a>
       </div>
       <div class="flex items-center gap-6">
-        <a href={github} class="hover:text-primary" target="_blank" rel="me noopener">GitHub ↗</a>
-        <a href={linkedin} class="hover:text-primary" target="_blank" rel="me noopener">LinkedIn ↗</a>
+        <a href={github} class="inline-flex items-center gap-2 hover:text-primary" target="_blank" rel="me noopener"><Icon icon={faGithub} />GitHub ↗</a>
+        <a href={linkedin} class="inline-flex items-center gap-2 hover:text-primary" target="_blank" rel="me noopener"><Icon icon={faLinkedin} />LinkedIn ↗</a>
       </div>
     </div>
   </div>

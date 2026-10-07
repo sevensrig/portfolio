@@ -153,6 +153,8 @@ media:
 - `src/content.config.ts`: the `projects` and `resume` collections and their Zod schemas. The `CATEGORIES` list here drives the work filters.
 - `src/content/projects/<slug>/index.mdx`: one folder per project. Frontmatter adds `summary` (home page blurb) and `categories` to the draft model above. `media.hero` is optional until photos exist; cards show a grey placeholder without it.
 - `src/data/resume.yaml`: contact, education, experience, project slugs and skills.
+- `src/components/Icon.astro`: Font Awesome icons (free solid, regular and brand packages) inlined as SVG at build time, sized and coloured by the text around them. Used sparingly (2026-10-06): GitHub and LinkedIn in the hero, a file icon on the Résumé button and link, globe and GitHub icons on project links, an envelope on the contact email, a bug on "What broke" callouts, and one per Hubert menu option.
+- SEO (2026-10-06): `@astrojs/sitemap` writes `/sitemap-index.xml` (404 left out), `public/robots.txt` points to it, and the home page carries ProfilePage/Person JSON-LD via the `schema` prop on `Base.astro`. The owner still needs to verify srig.tech in Google Search Console and submit the sitemap.
 - `src/layouts/Base.astro`: the page shell (head, header, footer, Hubert).
 - `src/components/`: `Hero`, `ShaderBackground`, `WorkSection`, `ProjectCard`, `ProjectMedia`, `RoleList` (Experience and Leadership and community), `Contact`, `Hubert`, `Header`, `Footer`.
 - `src/components/story/`: the MDX story components (passed to `<Content components={…}>` in the project page).

@@ -1,4 +1,7 @@
 ---
+import Icon from "./Icon.astro"
+import { faFileLines } from "@fortawesome/free-regular-svg-icons"
+
 interface Props {
   name: string
 }
@@ -10,6 +13,6 @@ const { name } = Astro.props
   <nav class="flex items-center gap-6 text-sm font-medium">
     <a href="/#work" class="hidden sm:inline hover:text-primary">Work</a>
     <a href="/#experience" class="hidden sm:inline hover:text-primary">Experience</a>
-    <a href="/resume.pdf" target="_blank" rel="noopener" class="btn btn-neutral btn-sm font-semibold">Résumé</a>
+    <a href="/resume.pdf" target="_blank" rel="noopener" class="btn btn-neutral btn-sm font-semibold"><Icon icon={faFileLines} />Résumé</a>
   </nav>
 </header>

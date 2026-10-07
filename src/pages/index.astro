@@ -1,21 +1,45 @@
 ---
 import { getEntry } from "astro:content"
+import { getImage } from "astro:assets"
+import headshot from "../assets/headshot.jpg"
 import Base from "../layouts/Base.astro"
 import Hero from "../components/Hero.astro"
 import WorkSection from "../components/WorkSection.astro"
 import RoleList from "../components/RoleList.astro"
 import Testimonials from "../components/Testimonials.astro"
 import Contact from "../components/Contact.astro"
+import Icon from "../components/Icon.astro"
+import { faFileLines } from "@fortawesome/free-regular-svg-icons"
 
-const { contact, experience, community, testimonials } = (await getEntry("resume", "resume"))!.data
+const { contact, education, experience, community, testimonials } = (await getEntry("resume", "resume"))!.data
+
+// Tells Google this page is a person's profile, so a search for the name can
+// show the site with the right photo and links.
+const photo = await getImage({ src: headshot, width: 480 })
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "ProfilePage",
+  url: Astro.site!.href,
+  mainEntity: {
+    "@type": "Person",
+    name: contact.name,
+    alternateName: "Srig Srinivasan",
+    url: Astro.site!.href,
+    image: new URL(photo.src, Astro.site).href,
+    description: `Computer science student at ${education[0].school}, graduating ${education[0].graduation}. Builds web apps, AI agents and hardware projects.`,
+    alumniOf: { "@type": "CollegeOrUniversity", name: education[0].school },
+    sameAs: [contact.github, contact.linkedin],
+    knowsAbout: ["Software engineering", "Full-stack web development", "AI agents", "Data engineering", "TypeScript", "Python", "React"],
+  },
+}
 ---
 
-<Base>
+<Base schema={schema}>
   <Hero github={contact.github} linkedin={contact.linkedin} />
   <main class="px-4 md:px-12 max-w-6xl mx-auto pt-32">
     <WorkSection />
     <RoleList id="experience" title="Experience" roles={experience}>
-      <a id="resume" href="/resume.pdf" target="_blank" rel="noopener" class="mt-8 inline-block font-medium underline decoration-primary decoration-2 underline-offset-4">View full résumé ↗</a>
+      <a id="resume" href="/resume.pdf" target="_blank" rel="noopener" class="mt-8 inline-flex items-center gap-2 font-medium"><Icon icon={faFileLines} /><span class="underline decoration-primary decoration-2 underline-offset-4">View full résumé ↗</span></a>
     </RoleList>
     <Testimonials testimonials={testimonials} />
     <RoleList id="community" title="Leadership and community" roles={community} />

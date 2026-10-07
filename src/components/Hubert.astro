@@ -6,13 +6,17 @@
 //
 // Each option names a home page section, an optional work filter, and what
 // Hubert says once he has taken you there.
+import Icon from "./Icon.astro"
+import { faBriefcase, faLayerGroup, faRobot, faTableCellsLarge } from "@fortawesome/free-solid-svg-icons"
+import { faEnvelope, faFileLines } from "@fortawesome/free-regular-svg-icons"
+
 const options = [
-  { label: "All projects", target: "work", filter: "all", reply: "Here's everything." },
-  { label: "AI work", target: "work", filter: "ai", reply: "Here's the AI work." },
-  { label: "Full-stack work", target: "work", filter: "fullstack", reply: "Full-stack, coming up." },
-  { label: "Experience", target: "experience", reply: "Here's where Srig worked." },
-  { label: "Résumé", target: "resume", reply: "The résumé is right here." },
-  { label: "Get in touch", target: "contact", reply: "Say hi!" },
+  { label: "All projects", icon: faTableCellsLarge, target: "work", filter: "all", reply: "Here's everything." },
+  { label: "AI work", icon: faRobot, target: "work", filter: "ai", reply: "Here's the AI work." },
+  { label: "Full-stack work", icon: faLayerGroup, target: "work", filter: "fullstack", reply: "Full-stack, coming up." },
+  { label: "Experience", icon: faBriefcase, target: "experience", reply: "Here's where Srig worked." },
+  { label: "Résumé", icon: faFileLines, target: "resume", reply: "The résumé is right here." },
+  { label: "Get in touch", icon: faEnvelope, target: "contact", reply: "Say hi!" },
 ]
 ---
 
@@ -24,7 +28,7 @@ const options = [
       {options.map((o) => (
         <li>
           <button type="button" data-target={o.target} data-filter-to={o.filter} data-reply={o.reply}>
-            {o.label}<span aria-hidden="true">→</span>
+            <span class="hubert-opt"><Icon icon={o.icon} class="hubert-icon" />{o.label}</span><span class="hubert-arrow" aria-hidden="true">→</span>
           </button>
         </li>
       ))}
@@ -130,7 +134,10 @@ const options = [
     font-size: 14px; font-weight: 500; text-align: left; cursor: pointer;
   }
   .hubert-panel li button:hover, .hubert-panel li button:focus-visible { background: var(--color-base-200); outline: none; }
-  .hubert-panel li button span { color: color-mix(in oklab, var(--color-base-content) 40%, transparent); }
+  .hubert-panel li button .hubert-arrow { color: color-mix(in oklab, var(--color-base-content) 40%, transparent); }
+  .hubert-opt { display: inline-flex; align-items: center; gap: 10px; }
+  .hubert-opt :global(.hubert-icon) { width: 14px; color: color-mix(in oklab, var(--color-base-content) 55%, transparent); }
+  .hubert-panel li button:hover :global(.hubert-icon) { color: var(--color-primary); }
 
   @keyframes hubert-bob { 50% { transform: translateY(-3px); } }
   @keyframes hubert-wiggle { 25% { transform: rotate(-12deg); } 75% { transform: rotate(12deg); } }

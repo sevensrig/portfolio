@@ -1,0 +1,27 @@
+---
+// A Font Awesome icon as an inline <svg>, rendered at build time: no icon font,
+// no CDN and no JavaScript. Sized to the surrounding text (1em) and coloured
+// by it (currentColor), like FA's own SVG output.
+import type { IconDefinition } from "@fortawesome/free-solid-svg-icons"
+
+interface Props {
+  icon: IconDefinition
+  class?: string
+  /** Only for an icon that stands alone; icons next to text stay hidden from screen readers. */
+  label?: string
+}
+const { icon, class: className, label } = Astro.props
+const [width, height, , , path] = icon.icon
+const paths = Array.isArray(path) ? path : [path]
+---
+
+<svg
+  class:list={["inline-block h-[1em] w-auto shrink-0 align-[-0.125em]", className]}
+  viewBox={`0 0 ${width} ${height}`}
+  fill="currentColor"
+  role={label ? "img" : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : "true"}
+>
+  {paths.map((d) => <path d={d} />)}
+</svg>

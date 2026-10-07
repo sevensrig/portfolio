@@ -1,4 +1,7 @@
 ---
+import Icon from "../../components/Icon.astro"
+import { faGlobe } from "@fortawesome/free-solid-svg-icons"
+import { faGithub } from "@fortawesome/free-brands-svg-icons"
 // One page per project, like generateStaticParams + a dynamic route in Next.js.
 // Layout: title → meta → hero media → TL;DR (the 30-second layer) → the story
 // (the deep layer) → next project.
@@ -46,8 +49,8 @@ const facts = [
         <p class="font-mono text-xs text-base-content/50">
           {yearRange(period.start, period.end)} · {role} · {statusLabel}
         </p>
-        {links.demo && <a href={links.demo} target="_blank" rel="noopener" class="text-sm font-medium underline decoration-primary decoration-2 underline-offset-4">Live link ↗</a>}
-        {links.github && <a href={links.github} target="_blank" rel="noopener" class="text-sm font-medium underline decoration-primary decoration-2 underline-offset-4">Code ↗</a>}
+        {links.demo && <a href={links.demo} target="_blank" rel="noopener" class="inline-flex items-center gap-2 text-sm font-medium"><Icon icon={faGlobe} /><span class="underline decoration-primary decoration-2 underline-offset-4">Live link ↗</span></a>}
+        {links.github && <a href={links.github} target="_blank" rel="noopener" class="inline-flex items-center gap-2 text-sm font-medium"><Icon icon={faGithub} /><span class="underline decoration-primary decoration-2 underline-offset-4">Code ↗</span></a>}
       </div>
     </header>
 
