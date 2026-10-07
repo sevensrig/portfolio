@@ -1,0 +1,34 @@
+---
+title: iMessage Wrapped
+tagline: Spotify Wrapped, but for your texts with one person
+summary: An anniversary gift turned open-source tool. One Python command reads a year of iMessages with one person, straight from the Mac's local database, and turns them into an auto-playing, Spotify Wrapped-style story.
+status: shipped
+period: { start: 2026-06, end: 2026-06 }
+role: Solo
+stack: [Python, SQLite, HTML, CSS, JavaScript]
+categories: [frontend]
+order: 10
+links:
+  github: https://github.com/sevensrig/couples-imessage-wrapped
+tldr:
+  problem: I wanted a one-year anniversary gift that was actually about us, and a year of texts already told the story.
+  built: A Python script that reads the Mac's Messages database and computes the stats, plus a single-file, framework-free slideshow that plays them back like Spotify Wrapped.
+  outcome: Built as a gift, then cleaned up and open-sourced so anyone with a Mac can run it on their own conversations.
+media:
+  hero: ./cover.png
+---
+
+{/* Screens use the repo's built-in fictional sample data (Mary & Joe), never real messages. */}
+
+Run `python3 wrapped.py`, enter a phone number and two names, and it opens a full-screen story in the browser. The slides cover total messages, "I love you" count, the hour you text most, your busiest day, the longest run of texts without a reply, average reply time, top emojis, phrases only you two say, and a heart-shaped word cloud.
+
+## How it works
+
+- **Reading the texts.** iMessage stores everything in a SQLite database on the Mac. The script opens it read-only, finds the person's handles, and filters to the last year. It drops tapback reactions, so the numbers only count messages someone actually typed.
+- **Recovering the text.** Newer versions of macOS often leave a message's text column empty and keep the words inside a binary blob instead. I wrote a small decoder that pulls the plain text back out of it.
+- **Fair stats.** Reply times ignore rapid-fire back-and-forth, so a quick exchange doesn't make the average meaningless. Common filler words are filtered out of the phrases and word cloud.
+- **The slideshow.** One self-contained HTML file with no framework. It auto-advances, counts the numbers up, and supports tapping and arrow keys.
+
+## Privacy
+
+Everything stays on your computer. The script only writes aggregate stats to one local file, and that file is in `.gitignore` so it can't be committed by accident. A fresh clone shows made-up sample data, which is what the screens above use.
