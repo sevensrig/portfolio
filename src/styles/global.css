@@ -50,8 +50,11 @@
 }
 
 @layer base {
-  html { scroll-behavior: smooth; }
-  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  /* Smooth scrolling for in-page links only. Base.astro adds .smooth after the
+     page loads, so arriving at /#work jumps straight there instead of
+     visibly scrolling down from the top. */
+  html.smooth { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html.smooth { scroll-behavior: auto; } }
   [id] { scroll-margin-top: 2.5rem; }
   ::selection { background: var(--color-primary); color: var(--color-primary-content); }
 }

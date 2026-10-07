@@ -60,6 +60,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
     <Footer name={name} location={resume.contact.location} />
     {hubert && <Hubert />}
     <script>
+      // See html.smooth in global.css: smooth scrolling starts only after load.
+      addEventListener("load", () => setTimeout(() => document.documentElement.classList.add("smooth")))
+    </script>
+    <script>
       // Autoplaying loops (card and hero videos) stay on their poster for
       // visitors who ask their device to reduce motion.
       if (matchMedia("(prefers-reduced-motion: reduce)").matches) {

@@ -38,7 +38,7 @@ const facts = [
 
 <Base title={title} description={tagline} og={project.id}>
   <main class="px-4 md:px-12 max-w-6xl mx-auto pt-16 pb-32">
-    <a href="/#work" class="font-mono text-xs text-base-content/50 hover:text-base-content">← All work</a>
+    <a href="/#work" data-back-to-work class="font-mono text-xs text-base-content/50 hover:text-base-content">← All work</a>
 
     <header class="mt-10">
       <h1 class="font-semibold leading-[0.98] tracking-[-0.04em] text-[clamp(2.4rem,6vw,5.5rem)]">
@@ -89,6 +89,21 @@ const facts = [
     }
   </main>
 </Base>
+
+<script>
+  // Came here from the home page? "All work" then goes back in history, so the
+  // browser returns to exactly where you were (same scroll, same filter) and
+  // the page transition plays in reverse. Otherwise it's a plain link to /#work.
+  document.querySelector("[data-back-to-work]")?.addEventListener("click", (e) => {
+    const event = e as MouseEvent
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+    const from = document.referrer ? new URL(document.referrer) : null
+    if (from?.origin === location.origin && from.pathname === "/" && history.length > 1) {
+      event.preventDefault()
+      history.back()
+    }
+  })
+</script>
 
 <style>
   /* Minimal prose styles for the MDX story. :where() keeps them easy for

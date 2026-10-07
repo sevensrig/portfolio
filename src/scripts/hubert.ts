@@ -96,13 +96,41 @@ export function initHubert(root: HTMLElement) {
     await root.animate([at(0, 0), at(dx / 2, dy / 2 - 90), at(dx, dy)], flight).finished
     root.classList.remove("flying")
     root.classList.add("perched")
+
+    // While perched he's glued to the heading: if the page moves (the smooth
+    // scroll still settling, or the visitor scrolling), he moves with it
+    // instead of hanging in the same spot on screen.
+    const textBottom = () => {
+      const range = document.createRange()
+      range.selectNodeContents(heading)
+      return range.getBoundingClientRect().bottom
+    }
+    // Offsets are measured from where the heading was predicted to land, so
+    // if the scroll is still settling when he arrives, he settles with it.
+    let py = dy
+    let queued = false
+    const follow = () => {
+      queued = false
+      py = dy + (textBottom() - text.bottom)
+      root.style.transform = `translate(${dx}px, ${py}px)`
+    }
+    const onScroll = () => {
+      if (!queued) requestAnimationFrame(follow)
+      queued = true
+    }
+    root.getAnimations().forEach((a) => a.cancel())
+    follow()
+    addEventListener("scroll", onScroll, { passive: true })
+
     if (reply) say(reply)
     await wait(1800)
     hush()
+    removeEventListener("scroll", onScroll)
 
     root.classList.remove("perched")
     root.classList.add("flying")
-    await root.animate([at(dx, dy), at(dx / 2, dy / 2 - 90), at(0, 0)], flight).finished
+    root.style.transform = ""
+    await root.animate([at(dx, py), at(dx / 2, py / 2 - 90), at(0, 0)], flight).finished
     root.getAnimations().forEach((a) => a.cancel())
     root.classList.remove("flying")
     flash("happy", 500)
