@@ -20,6 +20,8 @@ media:
   hero: ./cover.png
 ---
 
+import Schema from "../../../components/diagrams/BlindDraftSchema.astro"
+
 {/* DRAFT written from the repo's code and commit history. Edit freely. */}
 
 ## What it does
@@ -40,6 +42,10 @@ Two players each get a fake $20 and a few empty roster slots. Items from a categ
 - **Row-level security hides the deck.** Clients can't read the real game tables at all. They read projection tables that hold a redacted copy, with the face-down card sent as `null`. The secret can't leak through a column that doesn't exist.
 - **Simultaneous moves** use a version number. A write only lands if the version still matches. The loser of a race gets the corrected state back, and their screen says "Your opponent got there first."
 - **Identity** is a per-device token instead of an account, so refreshing mid-game puts you back in your seat.
+
+<Diagram caption="The Postgres schema, from the migrations. Orange dots: secrets that never reach a browser. Browsers can only read the two tables on the right.">
+  <Schema />
+</Diagram>
 
 <Timeline
   items={[

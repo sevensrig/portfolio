@@ -1,0 +1,94 @@
+---
+// $20 Blind Draft: the Supabase schema as an ER diagram, from the repo's
+// migrations. Split by who can read it: the service role (Edge Functions)
+// sees everything; browsers can only read the two projection tables.
+type Column = [name: string, type: string, secret?: boolean]
+type Table = { name: string; x: number; y: number; w: number; cols: Column[] }
+
+const HEAD = 34
+const ROW = 18
+const height = (t: Table) => HEAD + t.cols.length * ROW + 10
+
+const rooms: Table = {
+  name: "rooms", x: 40, y: 74, w: 220,
+  cols: [
+    ["id", "uuid PK"], ["code", "text"], ["visibility", "enum"], ["status", "enum"],
+    ["category_id", "text"], ["variant_id", "text"], ["category_label", "text"], ["variant_label", "text?"],
+    ["budget", "int"], ["slots", "int"], ["created_at", "timestamptz"], ["last_active_at", "timestamptz"],
+  ],
+}
+const players: Table = {
+  name: "room_players", x: 40, y: 370, w: 220,
+  cols: [
+    ["id", "uuid PK"], ["room_id", "uuid FK"], ["seat", "0 | 1"], ["name", "text"],
+    ["token", "text", true], ["joined_at", "timestamptz"], ["last_seen_at", "timestamptz"],
+  ],
+}
+const games: Table = {
+  name: "games", x: 300, y: 74, w: 210,
+  cols: [["room_id", "uuid PK FK"], ["state", "jsonb", true], ["version", "int"], ["updated_at", "timestamptz"]],
+}
+const log: Table = {
+  name: "request_log", x: 300, y: 414, w: 210,
+  cols: [["id", "bigserial PK"], ["actor", "text"], ["action", "text"], ["created_at", "timestamptz"]],
+}
+const pub: Table = {
+  name: "game_public", x: 650, y: 74, w: 270,
+  cols: [["room_id", "uuid PK FK"], ["payload", "jsonb, redacted"], ["version", "int"], ["abandoned_by", "smallint?"], ["updated_at", "timestamptz"]],
+}
+const listings: Table = {
+  name: "public_room_listings", x: 650, y: 290, w: 270,
+  cols: [["room_id", "uuid PK FK"], ["category_label", "text"], ["variant_label", "text?"], ["budget", "int"], ["slots", "int"], ["created_at", "timestamptz"]],
+}
+const tables = [rooms, players, games, log, pub, listings]
+const rowY = (t: Table, i: number) => t.y + HEAD + i * ROW + 13
+---
+
+<svg class="dg" viewBox="0 0 960 590" role="img" aria-labelledby="bd-title bd-desc">
+  <title id="bd-title">$20 Blind Draft database schema</title>
+  <desc id="bd-desc">Six Postgres tables. Only the server can read rooms, room_players, games and request_log; rooms has up to two room_players and at most one games row, which holds the full game state including the shuffled deck. Browsers can read only game_public, a redacted projection of games, and public_room_listings, which a trigger keeps in sync while a room is public and open. Player tokens and the full game state never reach a browser.</desc>
+  <defs>
+    <marker id="bd-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="var(--color-base-content)" />
+    </marker>
+  </defs>
+
+  <!-- Who can read what -->
+  <rect class="dg-inner" x="20" y="20" width="510" height="550" />
+  <text class="dg-kicker" x="40" y="46">SERVER ONLY · NO READ POLICIES</text>
+  <rect class="dg-inner" x="630" y="20" width="310" height="550" />
+  <text class="dg-kicker" x="650" y="46">BROWSERS CAN READ (RLS)</text>
+
+  <!-- Relationships, drawn under the tables -->
+  <line class="dg-line" x1="150" y1={rooms.y + height(rooms)} x2="150" y2={players.y} />
+  <text class="dg-edge" x="158" y={rooms.y + height(rooms) + 14}>1</text>
+  <text class="dg-edge" x="158" y={players.y - 6}>0..2 seats</text>
+
+  <line class="dg-line" x1="260" y1="120" x2="300" y2="120" />
+  <text class="dg-edge" x="264" y="113">1</text>
+  <text class="dg-edge" x="280" y="134" text-anchor="middle">0..1</text>
+
+  <line class="dg-line" x1="510" y1="120" x2="648" y2="120" marker-end="url(#bd-arrow)" />
+  <circle class="dg-dot" cx="510" cy="120" r="3.5" />
+  <text class="dg-edge" x="580" y="110" text-anchor="middle">REDACTED</text>
+  <text class="dg-edge" x="580" y="138" text-anchor="middle">COPY</text>
+
+  <path class="dg-line" d="M260 320 H580 V336 H648" marker-end="url(#bd-arrow)" />
+  <circle class="dg-dot" cx="260" cy="320" r="3.5" />
+  <text class="dg-edge" x="400" y="312" text-anchor="middle">TRIGGER · WHILE PUBLIC + OPEN</text>
+
+  {tables.map((t) => (
+    <>
+      <rect class="dg-box" x={t.x} y={t.y} width={t.w} height={height(t)} />
+      <text class="dg-name" x={t.x + 14} y={t.y + 22} style="font-family: var(--font-mono); font-weight: 600; font-size: 13px">{t.name}</text>
+      <line class="dg-line" x1={t.x} y1={t.y + HEAD - 4} x2={t.x + t.w} y2={t.y + HEAD - 4} style="stroke-opacity:.2" />
+      {t.cols.map(([name, type, secret], i) => (
+        <>
+          {secret && <circle class="dg-dot" cx={t.x + 9} cy={rowY(t, i) - 4} r="3" />}
+          <text class="dg-edge" x={t.x + 18} y={rowY(t, i)} style="fill-opacity:.9">{name}</text>
+          <text class="dg-note" x={t.x + t.w - 14} y={rowY(t, i)} text-anchor="end" style="font-size: 12px">{type}</text>
+        </>
+      ))}
+    </>
+  ))}
+</svg>
