@@ -183,7 +183,8 @@ export function initHubert(root: HTMLElement) {
     { once: true },
   )
 
-  // Eyes follow the pointer a couple of pixels.
+  // Eyes follow the pointer, but only a little: up to 1.5px sideways or up,
+  // and less than 1px down so they never slide toward his beak.
   window.addEventListener(
     "pointermove",
     (e) => {
@@ -191,7 +192,8 @@ export function initHubert(root: HTMLElement) {
       const dx = e.clientX - (r.left + r.width / 2)
       const dy = e.clientY - (r.top + r.height / 2)
       const d = Math.hypot(dx, dy) || 1
-      eyes.style.transform = `translate(${(dx / d) * 2.5}px, ${(dy / d) * 2}px)`
+      const y = dy / d
+      eyes.style.transform = `translate(${(dx / d) * 1.5}px, ${y * (y > 0 ? 0.75 : 1.5)}px)`
     },
     { passive: true },
   )
