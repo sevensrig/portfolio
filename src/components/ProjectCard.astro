@@ -24,7 +24,7 @@ const meta = [yearRange(period.start, period.end), ...stack.slice(0, 3)].join(" 
       <div class="mt-8 grid md:grid-cols-2 gap-6 md:gap-12">
         <div>
           <h3 class="text-3xl md:text-4xl font-semibold tracking-[-0.035em] w-fit" style={vt.title}>{title}</h3>
-          <p class="mt-2 font-mono text-xs text-base-content/50">{meta}</p>
+          <p class="mt-2 font-mono text-xs text-base-content/60">{meta}</p>
         </div>
         <p class="text-lg leading-relaxed text-base-content/75">
           {summary}{" "}
@@ -37,7 +37,7 @@ const meta = [yearRange(period.start, period.end), ...stack.slice(0, 3)].join(" 
       <ProjectMedia src={media.hero} alt={title} aspect="card" transitionName={vt.media} />
       <h3 class="mt-6 text-2xl font-semibold tracking-[-0.03em] w-fit" style={vt.title}>{title}</h3>
       <p class="mt-2 text-base-content/70">{summary}</p>
-      <p class="mt-3 font-mono text-xs text-base-content/50">{meta}</p>
+      <p class="mt-3 font-mono text-xs text-base-content/60">{meta}</p>
     </a>
   )
 }

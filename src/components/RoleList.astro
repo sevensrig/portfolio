@@ -24,7 +24,7 @@ const { id, title, roles } = Astro.props
 ---
 
 <section id={id} class="pb-32">
-  <h2 class="font-mono text-xs uppercase tracking-widest text-base-content/50 mb-6">{title}</h2>
+  <h2 class="font-mono text-xs uppercase tracking-widest text-base-content/60 mb-6">{title}</h2>
   <ol class="border-t border-base-content">
     {roles.map((job) => (
       <li class="border-b border-base-content/15">
@@ -32,7 +32,7 @@ const { id, title, roles } = Astro.props
           <summary class="relative grid md:grid-cols-[1fr_2fr_6rem_1.5rem] gap-1 md:gap-8 py-6 pr-10 md:pr-0 cursor-pointer list-none">
             <span class="font-semibold">{job.company}</span>
             <span class="text-base-content/70">{job.role}</span>
-            <span class="font-mono text-xs text-base-content/50 md:pt-1 md:text-right">{termYears([job, ...(job.returned ?? [])])}</span>
+            <span class="font-mono text-xs text-base-content/60 md:pt-1 md:text-right">{termYears([job, ...(job.returned ?? [])])}</span>
             <span class="job-toggle absolute right-0 top-5 md:static md:-mt-0.5 size-6 grid place-items-center border border-base-content/25 text-base-content/60 transition-colors group-hover:border-base-content group-hover:text-base-content" aria-hidden="true">
               <svg class="size-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1.5 6h9" /><path class="plus-v" d="M6 1.5v9" /></svg>
             </span>

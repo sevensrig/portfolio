@@ -12,8 +12,12 @@ interface Props {
   class?: string
   /** Shared name for the page transition between a card and its project page. */
   transitionName?: string
+  /** The page's main image (a project header): load it right away, not lazily. */
+  priority?: boolean
 }
-const { src, alt, aspect, position, class: className, transitionName } = Astro.props
+const { src, alt, aspect, position, class: className, transitionName, priority = false } = Astro.props
+// Cards sit two to a row from md up, so they never need the full-width files.
+const sizes = aspect === "card" ? "(min-width: 1152px) 560px, (min-width: 768px) 50vw, 100vw" : "(min-width: 1152px) 1152px, 100vw"
 const ratio = aspect === "wide" ? "aspect-[16/9]" : "aspect-[4/3]"
 ---
 
@@ -23,7 +27,7 @@ const ratio = aspect === "wide" ? "aspect-[16/9]" : "aspect-[4/3]"
 >
   {
     src ? (
-      <Image src={src} alt={alt} class="size-full object-cover" style={position ? `object-position: ${position}` : undefined} widths={[640, 960, 1280, 1920]} sizes="(min-width: 1152px) 1152px, 100vw" />
+      <Image src={src} alt={alt} class="size-full object-cover" style={position ? `object-position: ${position}` : undefined} widths={[640, 960, 1280, 1920]} {sizes} loading={priority ? "eager" : "lazy"} fetchpriority={priority ? "high" : "auto"} />
     ) : (
       <div class="size-full bg-linear-160 from-[#e2ddcf] to-[#cbc5b4]" role="img" aria-label={`${alt} (image coming soon)`} />
     )

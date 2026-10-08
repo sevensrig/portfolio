@@ -15,7 +15,7 @@ const { items, columns = 2 } = Astro.props
   {items.map((item) => (
     <figure>
       <Image src={item.src} alt={item.alt} class="w-full h-auto border border-base-content/20" widths={[480, 720, 960]} sizes={columns === 3 ? "33vw" : "(min-width: 640px) 50vw, 100vw"} />
-      {item.caption && <figcaption class="mt-3 font-mono text-xs text-base-content/50">{item.caption}</figcaption>}
+      {item.caption && <figcaption class="mt-3 font-mono text-xs text-base-content/60">{item.caption}</figcaption>}
     </figure>
   ))}
 </div>

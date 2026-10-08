@@ -17,7 +17,7 @@ const initials = (name: string) =>
 {
   testimonials.length > 0 && (
     <section id="testimonials" class="pb-32">
-      <h2 class="font-mono text-xs uppercase tracking-widest text-base-content/50 mb-10">
+      <h2 class="font-mono text-xs uppercase tracking-widest text-base-content/60 mb-10">
         {testimonials.length > 1 ? "Testimonials" : "Testimonial"}
       </h2>
       <div class="space-y-16">
@@ -33,7 +33,7 @@ const initials = (name: string) =>
               <span class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                 <span class="font-semibold">{t.name}</span>
                 <span class="text-base-content/70">{t.title}</span>
-                <span class="font-mono text-xs text-base-content/50">{t.relationship} · {t.date}</span>
+                <span class="font-mono text-xs text-base-content/60">{t.relationship} · {t.date}</span>
               </span>
             </figcaption>
           </figure>

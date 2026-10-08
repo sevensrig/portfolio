@@ -37,12 +37,12 @@ const playback = loop
 <figure class:list={[className ?? "my-12", wide && "md:-mx-24 lg:-mx-40", portrait && "mx-auto max-w-sm"]}>
   {
     sources.length ? (
-      <video class={box} style={vtStyle} poster={posterUrl} preload="metadata" {...playback}>
+      <video class={box} style={vtStyle} width={poster.width} height={poster.height} poster={posterUrl} preload="metadata" {...playback}>
         {sources.map((s) => <source src={s.url} type={s.type} />)}
       </video>
     ) : (
       <img class={box} style={vtStyle} src={posterUrl} alt={caption ?? ""} />
     )
   }
-  {caption && <figcaption class="mt-3 font-mono text-xs text-base-content/50">{caption}</figcaption>}
+  {caption && <figcaption class="mt-3 font-mono text-xs text-base-content/60">{caption}</figcaption>}
 </figure>
