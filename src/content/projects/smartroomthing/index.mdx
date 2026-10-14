@@ -5,13 +5,13 @@ summary: A modded Spotify Car Thing that controls three Google Cast speakers thr
 status: active
 period: { start: 2026-05, end: null }
 role: Solo — hardware, backend, UI
-stack: [Python, Flask, PyChromecast, Raspberry Pi, JavaScript, ADB, systemd]
+stack: [Python, Flask, PyChromecast, Raspberry Pi, JavaScript, ADB, systemd, pytest, GitHub Actions, Tailscale]
 categories: [hardware, backend]
 order: 3
 tldr:
   problem: Three Google Cast speakers in one room (a Nest Audio, a Google Home and the TV) each had their own volume, and adjusting them meant using a phone and unbalanced speaker volumes.
   built: A Spotify Car Thing with no WiFi, tunnelled over USB to a Flask server on a Raspberry Pi 2. The server drives all three speakers and proxies Spotify. The dial scales the whole mix, buttons recall presets, and there's a now-playing screen and a playlist grid.
-  outcome: It runs 24/7 on the Pi. After profiling, dial-to-speaker latency fell from 1,177 ms to 84 ms, and idle CPU dropped to under 1% of one core.
+  outcome: It runs 24/7 on the Pi. After profiling, dial-to-speaker latency fell from 1,177 ms to 84 ms, and idle CPU dropped to under 1% of one core. Merging to main deploys it to the Pi in under 30 seconds, and a broken deploy rolls itself back.
 media:
   hero: ./car-thing.jpg
   heroPosition: center 80%
@@ -33,6 +33,8 @@ The Car Thing was Spotify's discontinued in-car gadget: a small touchscreen with
 - **Buttons 1–3:** recall presets (desk, bed, ambient). Press save, then a number, to store the current mix.
 - **Button 4:** flips to a now-playing screen with album art and playback controls.
 - **Back button:** opens a grid of playlist covers.
+- **Previous track:** restarts the song, or goes back a track if you're in the first 5 seconds, like most music players.
+- **When nothing is playing:** the screen shows a clock, with Snoopy and Woodstock.
 
 <Video src="r2:smartroomthing/demo" poster={demoPoster} portrait caption="Presets and the dial in action, with sound, so you can hear the volume change. This is an earlier version of the interface, before I rewrote it as plain text." />
 
@@ -47,7 +49,7 @@ The Car Thing has no WiFi and no internet, so everything goes through the Pi.
 - **A Flask server on the Pi** keeps one persistent connection open to each speaker, with a writer thread per speaker that only ever sends the latest volume. It also proxies every Spotify call, so no secrets ever touch the device.
 - **systemd** restarts everything on boot. The screen turns its own backlight off whenever it can't reach the Pi.
 
-<Diagram caption="How the pieces talk. The Car Thing has no network of its own; everything goes through the Pi.">
+<Diagram caption="How the pieces talk. The Car Thing has no network of its own; everything goes through the Pi. Bottom row: how code gets to the Pi. Dashed: cloud services.">
   <Architecture />
 </Diagram>
 
@@ -56,7 +58,8 @@ The Car Thing has no WiFi and no internet, so everything goes through the Pi.
     { date: "May 2026", text: "First version on my Mac, with Home Assistant in Docker, started whenever my monitor was plugged in." },
     { date: "Jun 2026", text: "Moved to a Raspberry Pi 2 so it runs 24/7. Added playlists and speaker-group playback." },
     { date: "Sep 2026", text: "Tracked down the volume runaway bug, rebuilt the USB tunnel watchdog, and profiled and overhauled performance for the Pi 2." },
-    { date: "Sep 2026", text: "Fixed Cast connections that died silently, and added a lint and test pipeline (28 tests)." },
+    { date: "Sep 2026", text: "Fixed Cast connections that died silently." },
+    { date: "Oct 2026", text: "Added CI (36 tests, plus checks for the device's old browser) and automatic deploys from GitHub to the Pi, with health checks and rollback." },
   ]}
 />
 
@@ -98,6 +101,30 @@ The fixes were about waiting less:
 | UI render CPU | 5.2% | 0.1% |
 | Idle server CPU | ~1.3% | ~0.8% |
 
+## Shipping it
+
+Deploying used to be a list of commands typed over SSH: copy the files, restart the server, unlock the Car Thing's read-only filesystem, push, sync, lock it again. Skip the sync and the next reboot quietly undid the change. The Pi had also drifted from git, running code that was never committed.
+
+Now every pull request runs three checks:
+
+- **36 tests** for the server, with fake speakers and a stubbed Spotify, so they never touch real hardware.
+- **Linters set to the Car Thing's Chromium 69.** They fail on features it doesn't have, like optional chaining or flexbox `gap`, which would otherwise break silently on the device.
+- **ShellCheck** on the scripts.
+
+Merging to main deploys it. GitHub Actions joins the Pi's private Tailscale network and runs a deploy script that only touches what changed, which takes 3–28 seconds. Then it checks with real requests: the server answers, the files on the Car Thing match, and the Car Thing can reach the server through its USB tunnel. If anything fails, it restores the previous version. I tested this by deploying a deliberately broken commit, and it rolled itself back in 75 seconds.
+
+Access is locked down at every step. No ports are open on my router, and no Tailscale secret is stored: GitHub proves the job's identity directly. CI can reach only SSH on the Pi, and its key can run only one script, which accepts only commits already on main.
+
+| | Before | After |
+|---|---|---|
+| Deploying | Manual commands over SSH | Merge a pull request |
+| A broken deploy | Stays broken until I notice | Rolled back automatically |
+| Pi matches git | Drifted | Enforced |
+
+<Callout type="broke" title="The linter's blind spot">
+  I tested the browser-compatibility checks by sneaking in features Chromium 69 doesn't support. They caught most of them, but not `aspect-ratio`, because the compatibility data they rely on didn't cover it. I banned it with an explicit rule. A check is only worth trusting once you've watched it fail.
+</Callout>
+
 ## What I'd do next
 
-The lint and test pipeline (28 pytest tests, plus linters set up for the device's old Chromium) is on a branch waiting to be merged. I've also started a second screen, an HDMI dashboard driven by the same Pi.
+Rollback takes 75 seconds because a server that crashes on startup is only noticed when the health check times out. Watching systemd's restart count would catch it in seconds. I've also started a second screen, an HDMI dashboard driven by the same Pi.

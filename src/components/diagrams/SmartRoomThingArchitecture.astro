@@ -1,5 +1,6 @@
 ---
 // SmartRoomThing: Car Thing → USB tunnel → Flask on a Pi → Cast speakers and Spotify.
+// Bottom row: how code gets there (MacBook → GitHub Actions → Tailscale → Pi).
 const speakers = [
   { y: 40, name: "Nest Audio" },
   { y: 122, name: "Google Home" },
@@ -13,9 +14,9 @@ const pi = [
 ]
 ---
 
-<svg class="dg" viewBox="0 0 960 420" role="img" aria-labelledby="srt-title srt-desc">
+<svg class="dg" viewBox="0 0 960 570" role="img" aria-labelledby="srt-title srt-desc">
   <title id="srt-title">SmartRoomThing architecture</title>
-  <desc id="srt-desc">The Car Thing talks to a Flask server on a Raspberry Pi over a USB adb reverse tunnel. The server drives three Google Cast speakers over the local network and proxies the Spotify Web API over HTTPS.</desc>
+  <desc id="srt-desc">The Car Thing talks to a Flask server on a Raspberry Pi over a USB adb reverse tunnel. The server drives three Google Cast speakers over the local network and proxies the Spotify Web API over HTTPS. Code is written on a MacBook and pushed to GitHub; GitHub Actions runs CI and, on merge to main, deploys to the Pi over a private Tailscale network with no open ports.</desc>
   <defs>
     <marker id="srt-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
       <path d="M0 0 L10 5 L0 10 z" fill="var(--color-base-content)" />
@@ -70,4 +71,25 @@ const pi = [
   <rect class="dg-cloud" x="740" y="320" width="200" height="72" />
   <text class="dg-kicker" x="756" y="344">CLOUD</text>
   <text class="dg-name" x="756" y="368">Spotify Web API</text>
+
+  <!-- Shipping: MacBook → GitHub Actions → Tailscale → Pi -->
+  <rect class="dg-box" x="20" y="460" width="210" height="90" />
+  <text class="dg-kicker" x="38" y="486">MACBOOK</text>
+  <text class="dg-name" x="38" y="510">Code + pull requests</text>
+  <text class="dg-note" x="38" y="532">where I build it</text>
+
+  <line class="dg-line" x1="230" y1="520" x2="738" y2="520" marker-end="url(#srt-arrow)" />
+  <circle class="dg-dot" cx="230" cy="520" r="3.5" />
+  <text class="dg-edge" x="400" y="510" text-anchor="middle">GIT PUSH · PULL REQUEST</text>
+
+  <rect class="dg-cloud" x="740" y="460" width="200" height="90" />
+  <text class="dg-kicker" x="756" y="486">GITHUB ACTIONS</text>
+  <text class="dg-name" x="756" y="510">CI, then deploy</text>
+  <text class="dg-note" x="756" y="532">36 tests · lint · ShellCheck</text>
+
+  <path class="dg-line" d="M740 480 H560 V402" marker-end="url(#srt-arrow)" />
+  <circle class="dg-dot" cx="740" cy="480" r="3.5" />
+  <text class="dg-edge" x="650" y="472" text-anchor="middle">ON MERGE</text>
+  <text class="dg-edge" x="552" y="430" text-anchor="end">TAILSCALE · SSH</text>
+  <text class="dg-edge" x="552" y="446" text-anchor="end">NO OPEN PORTS</text>
 </svg>
