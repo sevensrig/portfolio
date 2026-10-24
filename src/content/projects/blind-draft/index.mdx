@@ -15,12 +15,13 @@ links:
 tldr:
   problem: The "$20 draft" party game only works if nobody knows what's coming next. Played remotely, whoever holds the shuffled deck could peek at it.
   built: A SvelteKit game whose rules are one pure reducer. Online play runs that same reducer in Supabase Edge Functions behind row-level security, so clients only ever see a redacted copy of the game, and simultaneous moves are settled with optimistic versioning.
-  outcome: Live, with no accounts needed. 190+ tests across unit, real-browser component and end-to-end suites, including a seeded simulation of 840 full drafts per run. CI runs 4 parallel jobs and gates on axe-core accessibility checks.
+  outcome: Live, with no accounts needed, and found on Google by about 200 visitors a day. 190+ tests across unit, real-browser component and end-to-end suites, including a seeded simulation of 840 full drafts per run. CI runs 4 parallel jobs and gates on axe-core accessibility checks.
 media:
   hero: ./cover.png
 ---
 
 import Schema from "../../../components/diagrams/BlindDraftSchema.astro"
+import traffic from "./vercel-traffic.png"
 
 {/* DRAFT written from the repo's code and commit history. Edit freely. */}
 
@@ -33,6 +34,19 @@ Two players each get a fake $20 and a few empty roster slots. Items from a categ
 - **No accounts:** play pass-and-play on one phone, or share a room link and play on two.
 - **The results sheet** is built to be screenshotted and argued about. There's no score.
 
+
+## Real players
+
+Around Oct 10, Google search traffic jumped from about 40 visitors a day to about 200, from the US, the UK, Australia and elsewhere. In 30 days the site had about 3,900 visitors and 11,000 page views.
+
+<Figure src={traffic} alt="Vercel Analytics chart over 30 days: about 40 visitors a day until Oct 9, then 175 to 300 a day. Totals: 3,879 visitors, 11,352 page views." caption="Vercel Analytics, last 30 days. Vercel counts a visitor per day, so returning players count again." wide />
+
+Pageviews don't prove anyone plays, and a local game never leaves the home page, so Vercel's bounce rate counts a finished game as a bounce. I wanted real numbers, so:
+
+- **Supabase** showed about 66 online games in one day.
+- **PostHog** now tracks games started, finished and quit, which categories people pick, and errors. Most games take about 2 minutes, and longer drafts take longer. Bots don't do that.
+- **No cookies, so no consent banner.** PostHog counts visitors with a hash that resets daily, and nothing personal is sent: no player names, no custom category text. Room IDs live in the URL, so every event is scrubbed of query strings before it leaves the browser. Session replay is off for good, since some players are on school Chromebooks.
+- **One tool for errors.** I first added Sentry for errors, then removed it a day later. PostHog errors land in the same session as the game events, so a crash reads right next to the quit that followed it, and that's one fewer SDK sending data.
 
 ## How it works
 
@@ -53,6 +67,7 @@ Two players each get a fake $20 and a few empty roster slots. Items from a categ
     { date: "Aug 2026", text: "Online play: schema, row-level security, Edge Functions and realtime updates. CI added." },
     { date: "Aug 2026", text: "Fixed quitting, the self-award exploit, and invite links that seated nameless guests." },
     { date: "Sep 2026", text: "Keepalive fix, then a cleanup that cut 1,383 lines of stale comments and dead code." },
+    { date: "Oct 2026", text: "Google traffic jumped from about 40 visitors a day to about 200. Added PostHog for game events and errors." },
   ]}
 />
 
@@ -70,6 +85,10 @@ Two players each get a fake $20 and a few empty roster slots. Items from a categ
 
 <Callout type="broke" title="A self-serve win button">
   Whoever held the top bid could press "Sell" on their own bid and award themselves the item before the other player could react. The server had the same hole: its seat check only ran on actions that named a player, so a bare "sold" slipped through. The fix lives in the rules engine, and an end-to-end test now sends that request as a hostile client at every version and expects it to be refused.
+</Callout>
+
+<Callout type="broke" title="Analytics that recorded nothing">
+  Right after switching PostHog to cookieless mode, every event disappeared. The browser sent them, and PostHog dropped them: cookieless mode also has to be switched on in the project settings, and until it is, the server throws events away. About 45 minutes of data was lost before I found it. A privacy setting in code only works if the service on the other end agrees.
 </Callout>
 
 ## Testing
