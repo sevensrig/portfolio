@@ -4,9 +4,14 @@ import mdx from "@astrojs/mdx"
 import sitemap from "@astrojs/sitemap"
 import tailwindcss from "@tailwindcss/vite"
 import rehypeExternalLinks from "rehype-external-links"
+import vercel from "@astrojs/vercel"
 
 export default defineConfig({
   site: "https://srig.tech",
+  output: "server",
+  adapter: vercel({
+    webAnalytics: { enabled: true },
+  }),
   integrations: [
     mdx({
       // Links in project stories that leave the site open in a new tab.
