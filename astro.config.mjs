@@ -8,7 +8,6 @@ import vercel from "@astrojs/vercel"
 
 export default defineConfig({
   site: "https://srig.tech",
-  output: "server",
   adapter: vercel({
     webAnalytics: { enabled: true },
   }),
