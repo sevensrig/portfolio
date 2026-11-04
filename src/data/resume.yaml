@@ -21,7 +21,7 @@ education:
 # Newest first; the site keeps this order.
 experience:
   - company: Fenwick & West
-    role: Business Innovation Intern
+    role: AI Data Engineer Intern
     start: 2026-06
     end: 2026-08
     summary: Marketing Operations, building data pipelines and agentic AI systems.
@@ -130,7 +130,7 @@ projects:
   - zoom-jira-agent
 
 skills:
-  Languages: [Java, Python, TypeScript, JavaScript, CSS, HTML, SQL, Apex, SOQL]
+  Languages: [TypeScript, JavaScript, Java, Python, CSS, HTML, SQL]
+  Frameworks and tools: [React, Vue, MySQL, REST, Flask, WordPress, Netlify, Jira, Salesforce, Scrum, Vite]
   DevOps and cloud: [Google Cloud, AWS, Firebase, GitHub Actions, Terraform, Grafana, Vitest, Playwright, Docker, Supabase]
-  Frameworks and tools: [React, Nuxt, Vue, MySQL, REST, Flask, WordPress, Netlify, Jira, Salesforce, Scrum, Vite]
   AI/ML: [Ollama, Roboflow, RAG, Claude Code, Cursor, Weights & Biases, prompt engineering]
