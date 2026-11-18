@@ -15,9 +15,33 @@ export function setWorkFilter(category: string) {
   })
   const empty = document.querySelector<HTMLElement>("[data-filter-empty]")
   if (empty) empty.hidden = shown > 0
+  moveBar()
+}
+
+// The orange underline under the selected filter: one bar that slides between
+// buttons (and follows them when the row wraps on a phone).
+let bar: HTMLElement | null = null
+function moveBar() {
+  const active = document.querySelector<HTMLElement>('[data-filter][aria-pressed="true"]')
+  if (!bar || !active) return
+  bar.style.width = `${active.offsetWidth}px`
+  bar.style.transform = `translate(${active.offsetLeft}px, ${active.offsetTop + active.offsetHeight + 4}px)`
 }
 
 export function initWorkFilters() {
+  const group = document.querySelector<HTMLElement>(".work-filters")
+  if (group) {
+    bar = document.createElement("span")
+    bar.className = "work-filter-bar"
+    bar.setAttribute("aria-hidden", "true")
+    // Place it before turning on the slide, so it doesn't fly in on page load.
+    bar.style.transition = "none"
+    group.append(bar)
+    group.classList.add("has-slider")
+    moveBar()
+    requestAnimationFrame(() => requestAnimationFrame(() => bar && (bar.style.transition = "")))
+    new ResizeObserver(moveBar).observe(group)
+  }
   document.querySelectorAll<HTMLButtonElement>("[data-filter]").forEach((b) =>
     b.addEventListener("click", () => setWorkFilter(b.dataset.filter!)),
   )
