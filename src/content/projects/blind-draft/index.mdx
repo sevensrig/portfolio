@@ -1,11 +1,11 @@
 ---
 title: $20 Blind Draft
-tagline: A two-player bidding party game you can play on one phone or two
-summary: A two-player blind-bidding party game. Online play is server-authoritative, so the shuffled deck never reaches a player's browser, and a randomized simulation plays 840 full drafts on every test run.
+tagline: A blind-bidding party game for 2–4 players, on one phone or online
+summary: A blind-bidding party game based on the $20 draft trend. About 44,000 games were played in its first month of analytics. Online play is server-authoritative, so the shuffled deck never reaches a player's browser.
 status: active
 period: { start: 2026-07, end: null }
 role: Solo — design, frontend, backend
-stack: [SvelteKit, TypeScript, Supabase, Postgres, Deno, Vitest, Playwright]
+stack: [SvelteKit, TypeScript, Supabase, Postgres, Deno, Vitest, Playwright, k6, PostHog]
 categories: [fullstack, backend]
 featured: true
 order: 1
@@ -13,61 +13,74 @@ links:
   demo: https://www.20dollardraftgame.com/
   github: https://github.com/sevensrig/blind-draft
 tldr:
-  problem: The "$20 draft" party game only works if nobody knows what's coming next. Played remotely, whoever holds the shuffled deck could peek at it.
-  built: A SvelteKit game whose rules are one pure reducer. Online play runs that same reducer in Supabase Edge Functions behind row-level security, so clients only ever see a redacted copy of the game, and simultaneous moves are settled with optimistic versioning.
-  outcome: Live, with no accounts needed, and found on Google by about 200 visitors a day. 190+ tests across unit, real-browser component and end-to-end suites, including a seeded simulation of 840 full drafts per run. CI runs 4 parallel jobs and gates on axe-core accessibility checks.
+  problem: The $20 draft trend only works if nobody knows what's coming next. Played online, whoever holds the shuffled deck could peek at it.
+  built: A SvelteKit game whose rules are one pure reducer, shared by pass-and-play, a bot, a tutorial and online rooms for 2–4 players. Online, Supabase Edge Functions run that reducer behind row-level security, so browsers only ever see a redacted copy of the game.
+  outcome: About 44,000 games in a month, 78% of them finished. 550 tests with 99.8% line coverage on the game logic, and online moves now confirm in about 400 ms, down from about 780.
 media:
   hero: ./cover.png
 ---
 
 import Schema from "../../../components/diagrams/BlindDraftSchema.astro"
-import traffic from "./vercel-traffic.png"
-
-{/* DRAFT written from the repo's code and commit history. Edit freely. */}
 
 ## What it does
 
-Two players each get a fake $20 and a few empty roster slots. Items from a category (NBA players, foods, movies, or a list you type yourself) are revealed one at a time, so nobody knows whether something better is coming. Either player opens the bidding, they raise each other, and when one concedes, the other buys it. Every item ends up on someone's roster.
+Everyone gets a fake budget and a few empty roster slots. Items from a category (NBA players, celebrities, fast food, or a list you type yourself) are revealed one at a time from a deck nobody has seen, so nobody knows whether something better is coming. Anyone can open the bidding, and when everyone else passes, the top bidder buys it. Every item ends up on someone's roster.
 
-- **No turn order:** whoever wants the item opens.
-- **Running out of money is the point:** once a player is broke, the other names the price or lets items go free.
-- **No accounts:** play pass-and-play on one phone, or share a room link and play on two.
-- **The results sheet** is built to be screenshotted and argued about. There's no score.
-
+- **Four ways to play:** pass-and-play on one phone, online rooms for 2–4 players with a live lobby, one-on-one against a bot, and a guided tutorial against a scripted coach.
+- **Scored, with a winner.** Every pick scores 10–100 points, from hidden tiers that are revealed at the end or, for sports, from real stats blended with outside rankings. Getting a player cheap earns a steal bonus.
+- **Online extras:** four emotes during the draft, a chat on the results screen, and rematches with a new category.
+- **20 categories**, plus Make Your Own, which works online too.
+- **No accounts.** A share button turns the results into an image made to be argued about.
 
 ## Real players
 
-Around Oct 10, Google search traffic jumped from about 40 visitors a day to about 200, from the US, the UK, Australia and elsewhere. In 30 days the site had about 3,900 visitors and 11,000 page views.
+Google traffic jumped in October, so I wanted to know whether people actually played. Page views can't tell you that, so I added PostHog to track games started, finished and quit. In its first month (Oct 23 – Nov 24):
 
-<Figure src={traffic} alt="Vercel Analytics chart over 30 days: about 40 visitors a day until Oct 9, then 175 to 300 a day. Totals: 3,879 visitors, 11,352 page views." caption="Vercel Analytics, last 30 days. Vercel counts a visitor per day, so returning players count again." wide />
+- **About 44,000 games:** about 30,000 pass-and-play, 10,400 against the bot and 3,900 online.
+- **78% were finished.** Bot games finish 92% of the time and online games 88%.
+- **NBA is the most played category**, then Make Your Own, Perfect Life, Celebrities and NFL.
 
-Pageviews don't prove anyone plays, and a local game never leaves the home page, so Vercel's bounce rate counts a finished game as a bounce. I wanted real numbers, so:
+The numbers also shaped what I built. Hosts were sitting alone in rooms and people browsing an empty room list left, so I added a bot to play while you wait. 61% of lonely hosts took it, and when a real player joined mid-game, every host who made a choice picked the real player. When nobody is online, the room list shows a stand-in bot opponent, so the lobby is never empty.
 
-- **Supabase** showed about 66 online games in one day.
-- **PostHog** now tracks games started, finished and quit, which categories people pick, and errors. Most games take about 2 minutes, and longer drafts take longer. Bots don't do that.
-- **No cookies, so no consent banner.** PostHog counts visitors with a hash that resets daily, and nothing personal is sent: no player names, no custom category text. Room IDs live in the URL, so every event is scrubbed of query strings before it leaves the browser. Session replay is off for good, since some players are on school Chromebooks.
-- **One tool for errors.** I first added Sentry for errors, then removed it a day later. PostHog errors land in the same session as the game events, so a crash reads right next to the quit that followed it, and that's one fewer SDK sending data.
+The audience is mostly teenagers, so tracking is deliberately minimal:
+
+- **No cookies, so no consent banner.** PostHog counts visitors with a hash that resets daily.
+- **Nothing personal is sent:** no player names, no chat, no custom lists. Room links are scrubbed from every URL, in both keys and values.
+- **No session replay or heatmaps**, ever.
+- **One tool for errors.** I tried Sentry and removed it the same day. PostHog errors land in the same session as the game events, so a crash reads right next to the quit that followed it.
 
 ## How it works
 
-- **The rules are one pure function.** `applyAction(state, action)` takes the game and a move and returns the next game. It knows nothing about Svelte, the DOM or storage. An illegal move returns the state untouched instead of throwing, so a stray double-tap can't break a game.
-- **Local play** runs that reducer in the browser and saves to localStorage.
-- **Online play** sends the same actions to four Supabase Edge Functions (create, join, act, leave), which run the same reducer on the server. Because the shuffled order is the whole game, it never leaves the server.
-- **Row-level security hides the deck.** Clients can't read the real game tables at all. They read projection tables that hold a redacted copy, with the face-down card sent as `null`. The secret can't leak through a column that doesn't exist.
-- **Simultaneous moves** use a version number. A write only lands if the version still matches. The loser of a race gets the corrected state back, and their screen says "Your opponent got there first."
-- **Identity** is a per-device token instead of an account, so refreshing mid-game puts you back in your seat.
+- **One rules engine runs everywhere.** `applyAction(state, action)` is a pure function used by pass-and-play, the bot, the tutorial and online rooms. The server runs a generated copy, and a test fails if that copy drifts from the source. Going from 2 players to 4 meant generalising this one reducer, not forking it, and every existing 2-player test passed unchanged.
+- **The bot only sees what a player could.** It's also a pure function of the game state: the current card, the cards already gone, and everyone's wallets and rosters. A test reshuffles the unrevealed cards and checks the bot's move doesn't change. It waits a human-like amount of time before bidding, because a bot that opens 0.3 seconds after a reveal isn't fun to play against.
+- **The server owns the deck.** The shuffled deck lives in a table browsers can't read at all. They read a separate table with only the revealed card, bids and rosters. For 3–4 player rooms, the deck is dealt when the host starts, since its size depends on how many players joined. Taking a seat, leaving and starting run in locked Postgres functions, so two players can't grab one seat and nobody can sit down after the deal.
+- **Racing moves settle on a version number.** A write only lands if the version still matches. The loser gets the correct state back, so a rejected bid never stays on screen.
+- **Moves show up early without trusting anyone.** A bid is announced over the room's realtime channel while the request is in flight. That channel is public to anyone with the room link, so receivers drop anything malformed, from the wrong seat or illegal under the rules, and anything the server doesn't confirm within 4 seconds disappears.
+- **The room list uses presence.** A room is listed only while its host is connected, which got rid of ghost rooms with no extra database writes.
 
-<Diagram caption="The Postgres schema, from the migrations. Orange dots: secrets that never reach a browser. Browsers can only read the two tables on the right.">
+<Diagram caption="The Postgres schema, from the migrations. Orange dots: secrets that never reach a browser. Browsers can only read the three tables on the right.">
   <Schema />
 </Diagram>
 
+## Making online play fast
+
+Online moves took about 780 ms to confirm. I benchmarked full games against production and timed each hop. The server's region wasn't the problem: a move made seven sequential database calls, each costing about 80 ms through Supabase's API gateway, and browsers repeated a CORS check every few seconds. Now a move makes two Postgres calls, one to read and one to write everything in a single transaction. That also fixed a crash between two writes leaving the public state a move behind.
+
+| Full 38-move games in production | Before | After |
+|---|---|---|
+| Your move confirmed (median) | ~780 ms | 367–425 ms |
+| Your move confirmed (90th percentile) | ~935 ms | 525–589 ms |
+| Opponent sees your move (median) | ~730 ms | 432–487 ms |
+| Opponent sees an announced bid (median) | — | 32–34 ms |
+
+The last row was measured with both seats on one machine, so real network latency between players comes on top.
+
 <Timeline
   items={[
-    { date: "Jul 2026", text: "Pass-and-play on one phone, with the rules engine and the full content pools." },
+    { date: "Jul 2026", text: "Pass-and-play on one phone, with the rules engine and the content pools." },
     { date: "Aug 2026", text: "Online play: schema, row-level security, Edge Functions and realtime updates. CI added." },
-    { date: "Aug 2026", text: "Fixed quitting, the self-award exploit, and invite links that seated nameless guests." },
-    { date: "Sep 2026", text: "Keepalive fix, then a cleanup that cut 1,383 lines of stale comments and dead code." },
-    { date: "Oct 2026", text: "Google traffic jumped from about 40 visitors a day to about 200. Added PostHog for game events and errors." },
+    { date: "Oct 2026", text: "Google traffic jumped. Added PostHog, the bot, a guided tutorial, SEO landing pages, k6 load tests and automated database deploys, and cut online move latency roughly in half." },
+    { date: "Nov 2026", text: "Scoring and a winner, emotes and chat, rematches, custom categories online, new categories with fairer decks, and 3–4 player rooms with a lobby." },
   ]}
 />
 
@@ -76,27 +89,30 @@ Pageviews don't prove anyone plays, and a local game never leaves the home page,
 <Callout type="broke" title="Realtime updates, silently denied">
   Online games stopped updating, with no error. My row-level security policy reads a player token from a request header. The REST API sets that header, but Supabase Realtime doesn't, so every change was checked against the policy, denied, and dropped without telling anyone.
 
-  I could have loosened the policy so anyone with a room ID could read it. Instead, a database trigger now broadcasts just the new version number, and clients re-fetch the game over REST, where the policy works. The first version only re-fetched when the number went up, which left the host stuck in the lobby when a guest joined. Now any nudge means "go check."
-</Callout>
-
-<Callout type="broke" title="Quitting wiped your opponent's game">
-  The Quit button sent a "reset" action. That's a legal move, so the server happily wrote a blank game, and the other player's draft vanished mid-bid. Rooms also never closed, so they stayed listed in the lobby. I added a proper leave function, marked rooms as abandoned, and gave the survivor an honest "your opponent left" screen instead of a results sheet.
+  I could have loosened the policy so anyone with a room link could read it. Instead, a database trigger now broadcasts just the new version number, and clients re-fetch the game over REST, where the policy works.
 </Callout>
 
 <Callout type="broke" title="A self-serve win button">
-  Whoever held the top bid could press "Sell" on their own bid and award themselves the item before the other player could react. The server had the same hole: its seat check only ran on actions that named a player, so a bare "sold" slipped through. The fix lives in the rules engine, and an end-to-end test now sends that request as a hostile client at every version and expects it to be refused.
+  Whoever held the top bid could press "Sell" on their own bid and award themselves the item before anyone else could react. The server had the same hole: its seat check only ran on actions that named a player. The fix lives in the rules engine, and an end-to-end test now sends that request as a hostile client and expects it to be refused.
 </Callout>
 
-<Callout type="broke" title="Analytics that recorded nothing">
-  Right after switching PostHog to cookieless mode, every event disappeared. The browser sent them, and PostHog dropped them: cookieless mode also has to be switched on in the project settings, and until it is, the server throws events away. About 45 minutes of data was lost before I found it. A privacy setting in code only works if the service on the other end agrees.
+<Callout type="broke" title="The same players, every game">
+  Players noticed the same items coming up again and again. I simulated 20,000 decks: Frank Gore was in every NFL All-Time deck, Jim Brown was in none, and no tight end was ever dealt in NFL Current. The deck builder always drew from the tier with the most cards left. Now every item is equally likely, and a test checks that every player in a pool actually gets dealt. "Random" code still needs a check of how often each item really comes up.
+</Callout>
+
+<Callout type="broke" title="A running back at quarterback">
+  In an NFL playtest, one player took both quarterbacks, and the other finished the draft with a running back at QB. Locking slots by position had been tried before and killed the bidding tension. Instead, before each reveal the engine now runs a small bipartite matching to check the remaining cards can still fill every open slot, and swaps in a benched player of the same tier if they can't. Placement stayed free; only the deal changed.
+</Callout>
+
+<Callout type="broke" title="The load test that kept failing">
+  The k6 load test failed 5 times in 4 days, on main and on unrelated branches, always on "illegal moves". Every failure had the same pattern: two racing bids where one player couldn't afford the amount. The script sized both bids from one player's wallet, and the server was right to reject them every time. Each racing bid is now sized to fit both wallets. When a test is flaky, check the test before the system.
 </Callout>
 
 ## Testing
 
-I tested at three levels, each for a different reason:
+- **417 unit tests** cover the rules engine and the bot, at 99.8% of lines and 100% of functions. Seeded simulations play 960 full 2-player games and up to 720 games with 3–4 players on every run, from timid to reckless bidding, and check that money is conserved and every item is owned exactly once.
+- **69 component tests** run in real Chromium, not a simulated DOM, because the accessibility contrast checks need real rendering.
+- **64 end-to-end tests** in Playwright run against the production build, including 20 that play online games across two simulated devices against a real Supabase stack.
+- **k6 load tests** run 54 concurrent games against a local stack with no failures and check that exactly one of two racing bids wins.
 
-- **Unit tests** cover the rules engine at 100% of lines and functions. A seeded simulation plays 40 full games for each of the 21 content pools, from timid to reckless bidding, and checks that money is conserved and every item is owned exactly once. That's 840 drafts per run, and it's what proves no line of play can strand a player.
-- **Component tests** run in real Chromium, not a simulated DOM, because the accessibility contrast checks need real rendering. axe found two real contrast failures (3.36:1 and 3.94:1), fixed with a dedicated muted-ink color.
-- **End-to-end tests** in Playwright run against the production build, never the dev server. The worst bug this project has had, a crash that left a page rendering perfectly with every button dead, only showed up in built output.
-
-CI runs these as 4 parallel jobs, so a red X says *what* broke. The end-to-end job boots a local Supabase stack and fails, rather than skips, if the online tests can't run.
+CI runs all of this as six jobs, so a red X says *what* broke. The last job deploys the database changes, and only from main after everything else passes.
