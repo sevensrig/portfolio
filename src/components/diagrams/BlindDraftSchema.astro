@@ -1,7 +1,7 @@
 ---
 // $20 Blind Draft: the Supabase schema as an ER diagram, from the repo's
 // migrations. Split by who can read it: the service role (Edge Functions)
-// sees everything; browsers can only read the two projection tables.
+// sees everything; browsers can only read the projections and their own chat.
 type Column = [name: string, type: string, secret?: boolean]
 type Table = { name: string; x: number; y: number; w: number; cols: Column[] }
 
@@ -14,13 +14,14 @@ const rooms: Table = {
   cols: [
     ["id", "uuid PK"], ["code", "text"], ["visibility", "enum"], ["status", "enum"],
     ["category_id", "text"], ["variant_id", "text"], ["category_label", "text"], ["variant_label", "text?"],
-    ["budget", "int"], ["slots", "int"], ["created_at", "timestamptz"], ["last_active_at", "timestamptz"],
+    ["budget", "int"], ["slots", "int"], ["max_players", "2–4"], ["settings", "jsonb?"], ["rematch", "jsonb?"],
+    ["lobby_rev", "int"], ["created_at", "timestamptz"], ["last_active_at", "timestamptz"],
   ],
 }
 const players: Table = {
-  name: "room_players", x: 40, y: 370, w: 220,
+  name: "room_players", x: 40, y: 440, w: 220,
   cols: [
-    ["id", "uuid PK"], ["room_id", "uuid FK"], ["seat", "0 | 1"], ["name", "text"],
+    ["id", "uuid PK"], ["room_id", "uuid FK"], ["seat", "0–3"], ["name", "text"],
     ["token", "text", true], ["joined_at", "timestamptz"], ["last_seen_at", "timestamptz"],
   ],
 }
@@ -29,24 +30,28 @@ const games: Table = {
   cols: [["room_id", "uuid PK FK"], ["state", "jsonb", true], ["version", "int"], ["updated_at", "timestamptz"]],
 }
 const log: Table = {
-  name: "request_log", x: 300, y: 414, w: 210,
+  name: "request_log", x: 300, y: 476, w: 210,
   cols: [["id", "bigserial PK"], ["actor", "text"], ["action", "text"], ["created_at", "timestamptz"]],
 }
 const pub: Table = {
   name: "game_public", x: 650, y: 74, w: 270,
-  cols: [["room_id", "uuid PK FK"], ["payload", "jsonb, redacted"], ["version", "int"], ["abandoned_by", "smallint?"], ["updated_at", "timestamptz"]],
+  cols: [["room_id", "uuid PK FK"], ["payload", "jsonb, redacted"], ["version", "int"], ["rematch", "jsonb?"], ["abandoned_by", "seat?"], ["left_by", "seat?"], ["updated_at", "timestamptz"]],
 }
 const listings: Table = {
   name: "public_room_listings", x: 650, y: 290, w: 270,
-  cols: [["room_id", "uuid PK FK"], ["category_label", "text"], ["variant_label", "text?"], ["budget", "int"], ["slots", "int"], ["created_at", "timestamptz"]],
+  cols: [["room_id", "uuid PK FK"], ["category_label", "text"], ["variant_label", "text?"], ["budget", "int"], ["slots", "int"], ["max_players", "2–4"], ["players", "int"], ["created_at", "timestamptz"]],
 }
-const tables = [rooms, players, games, log, pub, listings]
+const chat: Table = {
+  name: "chat_messages", x: 650, y: 510, w: 270,
+  cols: [["id", "bigserial PK"], ["room_id", "uuid FK"], ["seat", "0–3"], ["body", "text, ≤ 200"], ["created_at", "timestamptz"]],
+}
+const tables = [rooms, players, games, log, pub, listings, chat]
 const rowY = (t: Table, i: number) => t.y + HEAD + i * ROW + 13
 ---
 
-<svg class="dg" viewBox="0 0 960 590" role="img" aria-labelledby="bd-title bd-desc">
+<svg class="dg" viewBox="0 0 960 680" role="img" aria-labelledby="bd-title bd-desc">
   <title id="bd-title">$20 Blind Draft database schema</title>
-  <desc id="bd-desc">Six Postgres tables. Only the server can read rooms, room_players, games and request_log; rooms has up to two room_players and at most one games row, which holds the full game state including the shuffled deck. Browsers can read only game_public, a redacted projection of games, and public_room_listings, which a trigger keeps in sync while a room is public and open. Player tokens and the full game state never reach a browser.</desc>
+  <desc id="bd-desc">Seven Postgres tables. Only the server can read rooms, room_players, games and request_log; rooms has up to four room_players and at most one games row, which holds the full game state including the shuffled deck. Browsers can read only game_public, a redacted projection of games; public_room_listings, which a trigger keeps in sync while a room is public and open; and chat_messages for their own room. Player tokens and the full game state never reach a browser.</desc>
   <defs>
     <marker id="bd-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
       <path d="M0 0 L10 5 L0 10 z" fill="var(--color-base-content)" />
@@ -54,15 +59,15 @@ const rowY = (t: Table, i: number) => t.y + HEAD + i * ROW + 13
   </defs>
 
   <!-- Who can read what -->
-  <rect class="dg-inner" x="20" y="20" width="510" height="550" />
+  <rect class="dg-inner" x="20" y="20" width="510" height="640" />
   <text class="dg-kicker" x="40" y="46">SERVER ONLY · NO READ POLICIES</text>
-  <rect class="dg-inner" x="630" y="20" width="310" height="550" />
+  <rect class="dg-inner" x="630" y="20" width="310" height="640" />
   <text class="dg-kicker" x="650" y="46">BROWSERS CAN READ (RLS)</text>
 
   <!-- Relationships, drawn under the tables -->
   <line class="dg-line" x1="150" y1={rooms.y + height(rooms)} x2="150" y2={players.y} />
   <text class="dg-edge" x="158" y={rooms.y + height(rooms) + 14}>1</text>
-  <text class="dg-edge" x="158" y={players.y - 6}>0..2 seats</text>
+  <text class="dg-edge" x="158" y={players.y - 6}>up to 4 seats</text>
 
   <line class="dg-line" x1="260" y1="120" x2="300" y2="120" />
   <text class="dg-edge" x="264" y="113">1</text>
